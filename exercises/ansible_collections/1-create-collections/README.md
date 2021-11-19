@@ -101,32 +101,27 @@ $ tree
 └── ansible_collections
     └── newswangerd
         └── collection_demo
-            ├── docs
-            │   └── test_guide.md
             ├── FILES.json
             ├── MANIFEST.json
-            ├── plugins
-            │   └── modules
-            │       └── real_facts.py
             ├── README.md
-            ├── releases
-            │   ├── newswangerd-collection_demo-1.0.0.tar.gz
-            │   ├── newswangerd-collection_demo-1.0.1.tar.gz
-            │   ├── newswangerd-collection_demo-1.0.2.tar.gz
-            │   ├── newswangerd-collection_demo-1.0.3.tar.gz
-            │   ├── newswangerd-collection_demo-1.0.4.tar.gz
-            │   └── newswangerd-collection_demo-1.0.5.tar.gz
+            ├── docs
+            │   └── test_guide.md
+            ├── meta
+            │   └── runtime.yml
+            ├── plugins
+            │   └── modules
+            │       └── real_facts.py
             └── roles
                 ├── deltoid
-                │   ├── meta
-                │   │   └── main.yaml
-                │   ├── README.md
-                │   └── tasks
-                │       └── main.yml
+                │   ├── README.md
+                │   ├── meta
+                │   │   └── main.yaml
+                │   └── tasks
+                │       └── main.yml
                 └── factoid
-                    ├── meta
-                    │   └── main.yaml
                     ├── README.md
+                    ├── meta
+                    │   └── main.yaml
                     └── tasks
                         └── main.yml
 ```
