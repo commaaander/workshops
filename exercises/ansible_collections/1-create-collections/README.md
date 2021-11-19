@@ -579,7 +579,7 @@ Locally test the built container image with podman to demonstrate the expected b
 of the collection's module and role.
 
 ```bash
-podman run -d --rm -d -p 8080:80 localhost/demo-nginx
+podman run -d --rm -p 8080:80 localhost/demo-nginx
 ```
 
 Test the nginx web server and inspect the body section to find the generated string in the h1 section.
