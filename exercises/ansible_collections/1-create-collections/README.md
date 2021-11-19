@@ -420,7 +420,7 @@ registry_username: ""
 Create the Dockerfile used in the build process in the `roles/demo_image_builder/files/` folder:
 
 ```bash
-cat > roles/demo_nginx/files/ << EOF
+cat > roles/demo_image_builder/files/Dockerfile << EOF
 FROM nginx
 COPY index.html /usr/share/nginx/html
 EOF
