@@ -25,10 +25,13 @@ Cela dit, les exercices eux-mêmes devraient prendre environ 4 à 5 heures. La p
 
 Si votre expérience est différente dans la planification de ces ateliers, veuillez nous en informer.
 
+## Lab Diagram
+![ansible windows lab diagram](../../images/ansible_windows_diagram.png)
+
 
 ## Exercices
 
-- [Exercise 1 - Introduction et configuration de Automation Controller](1-tower/README.fr.md)
+- [Exercise 1 - Introduction et configuration de Automation Controller](1-controller/README.fr.md)
 - [Exercise 2 - Les commandes Ad-hoc](2-adhoc/README.fr.md)
 - [Exercise 3 - Les playbooks](3-playbook/README.fr.md)
 - [Exercise 4 - Les projets Automation Controller](4-projects/README.fr.md)

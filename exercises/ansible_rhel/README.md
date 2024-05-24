@@ -1,7 +1,7 @@
 # Ansible Workshop - Ansible for Red Hat Enterprise Linux
 
 **Read this in other languages**:
-<br>![uk](../../images/uk.png) [English](README.md),  ![japan](../../images/japan.png)[日本語](README.ja.md), ![brazil](../../images/brazil.png) [Portugues do Brasil](README.pt-br.md), ![france](../../images/fr.png) [Français](README.fr.md), ![Español](../../images/col.png) [Español](README.es.md).
+<br>![uk](../../images/uk.png) [English](README.md),  ![japan](../../images/japan.png)[日本語](README.ja.md), ![brazil](../../images/brazil.png) [Portugues do Brasil](README.pt-br.md), ![france](../../images/fr.png) [Français](README.fr.md), ![Español](../../images/es.png) [Español](README.es.md).
 <br>
 
 **This is documentation for Ansible Automation Platform 2**
@@ -13,12 +13,14 @@ After finishing this lab you are ready to start using Ansible for your automatio
 
 ## Table of Contents
 
-* [Presentations](#presentations)
-* [Time planning](#time-planning)
-* [Lab Diagram](#lab-diagram)
-* [Section 1 - Command-line Ansible Exercises](#section-1---command-line-ansible-exercises)
-* [Section 2 - Ansible Automation Platform Exercises](#section-2---ansible-automation-platform-exercises)
-* [Supplemental Exercises](#supplemental-exercises)
+- [Ansible Workshop - Ansible for Red Hat Enterprise Linux](#ansible-workshop---ansible-for-red-hat-enterprise-linux)
+  - [Table of Contents](#table-of-contents)
+  - [Presentations](#presentations)
+  - [Time planning](#time-planning)
+  - [Lab Diagram](#lab-diagram)
+  - [Section 1 - Command-line Ansible Exercises](#section-1---command-line-ansible-exercises)
+  - [Section 2 - Ansible Automation Platform Exercises](#section-2---ansible-automation-platform-exercises)
+  - [Supplemental Exercises](#supplemental-exercises)
 
 ## Presentations
 
@@ -49,11 +51,12 @@ Having said that, the exercises themselves should take roughly 4-5 hours. The fi
 * [Exercise 1.5 - Conditionals, Handlers and Loops](1.5-handlers)
 * [Exercise 1.6 - Templates](1.6-templates)
 * [Exercise 1.7 - Roles](1.7-role)
+* [Exercise 1.8 - Debugging and Error Handling](1.8-troubleshoot)
 
 ## Section 2 - Ansible Automation Platform Exercises
 
-* [Exercise 2.1 - Introduction to automation controller](2.1-intro)
-* [Exercise 2.2 - Inventories, credentials and ad hoc commands](2.2-cred)
+* [Exercise 2.1 - Introduction to Ansible automation controller](2.1-intro)
+* [Exercise 2.2 - Inventories and Credentials in Ansible Automation Controller](2.2-cred)
 * [Exercise 2.3 - Projects & job templates](2.3-projects)
 * [Exercise 2.4 - Surveys](2.4-surveys)
 * [Exercise 2.5 - Role based access control](2.5-rbac)

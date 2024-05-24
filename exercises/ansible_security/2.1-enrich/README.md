@@ -1,88 +1,17 @@
-# Exercise 2.1 - Investigation Enrichment
+{% include sec_workshop_credentials.md %}
+# 2.1 Investigation Enrichment
 
-**Read this in other languages**: <br>
-[![uk](../../../images/uk.png) English](README.md),  [![japan](../../../images/japan.png) 日本語](README.ja.md), [![france](../../../images/fr.png) Français](README.fr.md).<br>
+<!-- **Read this in other languages**: <br>
+[![uk](../../../images/uk.png) English](README.md),  [![japan](../../../images/japan.png) 日本語](README.ja.md), [![france](../../../images/fr.png) Français](README.fr.md).<br> -->
 
-<div id="section_title">
-  <a data-toggle="collapse" href="#collapse2">
-    <h3>Workshop access</h3>
-  </a>
-</div>
-<div id="collapse2" class="panel-collapse collapse">
-  <table>
-    <thead>
-      <tr>
-        <th>Role</th>
-        <th>Inventory name</th>
-        <th>Hostname</th>
-        <th>Username</th>
-        <th>Password</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Ansible Control Host</td>
-        <td>ansible</td>
-        <td>ansible-1</td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>IBM QRadar</td>
-        <td>qradar</td>
-        <td>qradar</td>
-        <td>admin</td>
-        <td>Ansible1!</td>
-      </tr>
-      <tr>
-        <td>Attacker</td>
-        <td>attacker</td>
-        <td>attacker</td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>Snort</td>
-        <td>snort</td>
-        <td>snort</td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>Check Point Management Server</td>
-        <td>checkpoint</td>
-        <td>checkpoint_mgmt</td>
-        <td>admin</td>
-        <td>admin123</td>
-      </tr>
-      <tr>
-        <td>Check Point Gateway</td>
-        <td>-</td>
-        <td>checkpoint_gw</td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>Windows Workstation</td>
-        <td>windows-ws</td>
-        <td>windows_ws</td>
-        <td>administrator</td>
-        <td><em>Provided by Instructor</em></td>
-      </tr>
-    </tbody>
-  </table>
-  <blockquote>
-    <p><strong>Note</strong></p>
-    <p>
-    The workshop includes preconfigured SSH keys to log into Red Hat Enterprise Linux hosts and don't need a username and password to log in.</p>
-  </blockquote>
-</div>
+- TOC
+{:toc}
 
-## Step 1.1 - The Background
+## 2.1.1 The Background
 
-In the last section the focus was on single tools and how they can be automated with Ansible. In the daily operation of security practitioners the need is one step higher: when something suspicious happens and needs further attention, security operations need to deploy many tools to secure an enterprise IT. In many enterprise environments, security solutions are not integrated with each other and, in large organizations, different teams are in charge of different aspects of IT security, with no processes in common. That often leads to manual work and interaction between people of different teams which is error prone and above all, slow. 
+In the last section the focus was on single tools and how they can be automated with Ansible. In the daily operation of security practitioners the need is one step higher: when something suspicious happens and needs further attention, security operations need to deploy many tools to secure an enterprise IT. In many enterprise environments, security solutions are not integrated with each other and, in large organizations, different teams are in charge of different aspects of IT security, with no processes in common. That often leads to manual work and interaction between people of different teams which is error prone and above all, slow.
 
-There are multiple stakeholders involved in preventing security breaches and, if a cyber attack was successful, remediate the security intrusion as quick as possible. 
+There are multiple stakeholders involved in preventing security breaches and, if a cyber attack was successful, remediate the security intrusion as quick as possible.
 
 Let's have a brief look at some of the personas involved.
 
@@ -94,11 +23,11 @@ Let's have a brief look at some of the personas involved.
 
 We will use Ansible Automation Platform to elevate the interactions learned in the last section to combine the security tools into automated workflows.
 
-## Step 1.2 - Preparations
+## 2.1.2 Preparations
 
 For this exercise to work properly, we'll need to make sure a few steps in the previous [Check Point exercises](../1.2-checkpoint/README.md) have been completed:
 
-1. The `whitelist_attacker.yml` playbook must have been run at least once. 
+1. The `whitelist_attacker.yml` playbook must have been run at least once.
 2. Also, the logging for the attacker whitelist policy must have been activated in the Check Point SmartConsole.
 
 Both were done in the [Check Point exercises](../1.2-checkpoint/README.md). If you missed the steps, go back there, execute the playbook, follow the steps to activate the logging and come back here.
@@ -124,7 +53,7 @@ Next, since this is a security lab, we do need suspicious traffic - an attack. W
 Execute the playbook:
 
 ```bash
-[student<X>@ansible-1 ~]$ ansible-navigator run web_attack_simulation.yml --mode stdout
+[student@ansible-1 ~]$ ansible-navigator run web_attack_simulation.yml --mode stdout
 ```
 
 > **Note**
@@ -133,20 +62,20 @@ Execute the playbook:
 
 The stage is set now. Read on to learn what this use case is about.
 
-## Step 1.3 - See the anomaly
+## 2.1.3 See the anomaly
 
 Imagine you are a security analyst in an enterprise. You were just informed of an anomaly in an application. From within a terminal in your VS Code online editor, ssh to the snort machine.
 
-Open a new terminal in your VS Code online editor to connect to the Snort server via SSH. 
+Open a new terminal in your VS Code online editor to connect to the Snort server via SSH.
 
 > **Note**
 >
-> As the login user for the Snort server, you need to use `ec2-user` 
+> As the login user for the Snort server, you need to use `ec2-user`
 
 After login, grep for the anomaly log entry:
 
 ```bash
-[student<X>@ansible-1 ~]$ ssh ec2-user@snort
+[student@ansible-1 ~]$ ssh ec2-user@snort
 Last login: Sun Sep 22 15:38:36 2019 from 35.175.178.231
 [ec2-user@snort ~]$ sudo grep web_attack /var/log/httpd/access_log
 172.17.78.163 - - [22/Sep/2019:15:56:49 +0000] "GET /web_attack_simulation HTTP/1.1" 200 22 "-" "curl/7.29.0"
@@ -161,7 +90,7 @@ You can log off from the Snort server by executing the command `exit` or pressin
 
 As a security analyst you know that anomalies can be the sign of a breach or other serious causes. You decide to investigate. Right now, you do not have enough information about the anomaly to dismiss it as a false positive. So you need to collect more data points - like from the firewall and the IDS. Going through the logs of the firewall and IDS manually takes a lot of time. In large organizations, the security analyst might not even have the necessary access rights and needs to contact the teams  responsible for both the enterprise firewall and the IDS, asking them to manually go through the respective logs and directly check for anomalies on their own and then reply with the results. This operation could take hours or even days.
 
-## Step 1.4 - Write playbook to create new log sources
+## 2.1.4 Write playbook to create new log sources
 
 If you use a SIEM, things are better: you can collect and analyze logs centrally. In our case the SIEM is QRadar. QRadar has the ability to collect logs from other systems and search them for suspicious activities. So how do we analyze logs in QRadar? Before we can look at these logs we need to stream them into QRadar. This happens in two steps: first we need to configure the sources - here Check Point and Snort - to forward their logs to QRadar. And second we have to add those systems as log sources to QRadar.
 
@@ -169,12 +98,14 @@ Doing this manually requires a lot of work on multiple machines, which again tak
 
 > **Note**
 >
-> Why don't we add those logs to QRadar permanently? The reason is that many log systems are licensed/paid by the amount of logs they consume, making it expansive pushing non-necessary logs in there. Also, if too many logs are in there it becomes harder to analyse the data properly and in a timely manner.
+> Why don't we add those logs to QRadar permanently? The reason is that many log systems are licensed/paid by the amount of logs they consume, making it expensive pushing non-necessary logs in there. Also, if too many logs are in there it becomes harder to analyse the data properly and in a timely manner.
 
 So let's write such a playbook which first configures the log sources - Snort and Check Point - to send the logs to QRadar, and afterwards add those log sources to QRadar so that it is aware of them.
 
 As usual, the playbook needs a name and the hosts it should be executed on. Since we are working on different machines in this workflow, we will separate the playbook into different "[plays](https://docs.ansible.com/ansible/latest/user_guide/playbooks_intro.html#playbook-language-example)":
 
+> **Note**
+>
 > The goal of a play is to map a group of hosts to some well defined roles, represented by things ansible calls tasks. At a basic level, a task is nothing more than a call to an ansible module.
 
 This means that the "host" section will appear multiple times in one playbook, and each section has a dedicated task list.
@@ -357,14 +288,14 @@ If you bring all these pieces together, the full playbook `enrich_log_sources.ym
 >
 > Remember to replace the value `YOURSERVERNAME` with your actual server name as mentioned further above.
 
-## Step 1.5 - Run playbooks to enable log forwarding
+## 2.1.5 Run playbooks to enable log forwarding
 
 Run the full playbook to add both log sources to QRadar:
 
 ```bash
-[student<X>@ansible-1 ~]$ ansible-navigator run enrich_log_sources.yml --mode stdout
+[student@ansible-1 ~]$ ansible-navigator run enrich_log_sources.yml --mode stdout
 ```
-In Check Point SmartConsole you might even see a little window pop up in the bottom left corner informing you about the progress. 
+In Check Point SmartConsole you might even see a little window pop up in the bottom left corner informing you about the progress.
 
 ![Check Point progress](images/2.1-checkpoint-progress.png#centreme)
 
@@ -374,19 +305,24 @@ In Check Point SmartConsole you might even see a little window pop up in the bot
 
 
 
-## Step 1.6 - Verify the log source configuration
+## 2.1.6 Verify the log source configuration
 
 Before that Ansible playbook was invoked, QRadar wasn’t receiving any data from Snort or Check Point. Immediately after, without any further intervention by us as security analyst, Check Point logs start to appear in the QRadar log overview.
 
 Log onto the QRadar web UI. Click on **Log Activity**. As you will see, there are a lot of logs coming in all the time:
 
-> **IBM QRadar Credentials**  
-> Username: `admin`  
+> **IBM QRadar Credentials**
+>
+> Username: `admin`
 > Password: `Ansible1!`
+
+> **Note**
+>
+> It is recommended to use Mozilla Firefox with the QRadar web UI.  For more information on this limitation please reference [workshop issue 1536](https://github.com/ansible/workshops/issues/1536)
 
 ![QRadar Log Activity showing logs from Snort and Check Point](images/qradar_log_activity.png#centreme)
 
-Many of those logs are in fact internal QRadar logs. To get a better overview, click on the drop down menu next to **Display** in the middle above the log list. Change the entry to **Raw Events**. 
+Many of those logs are in fact internal QRadar logs. To get a better overview, click on the drop down menu next to **Display** in the middle above the log list. Change the entry to **Raw Events**.
 
 Next, in the menu bar above that, click onto the button with the green funnel symbol and the text **Add Filter**. As **Parameter**, pick **Log Source [Indexed]**, as **Operator**, pick **Equals any of**. Then, from the list of log sources, pick **Check Point source** and click onto the small plus button on the right. Do the same for **Snort rsyslog source**, and press the button **Add Filter**:
 
@@ -404,7 +340,7 @@ Let's verify that QRadar also properly shows the log source. In the QRadar UI, c
 
 ![QRadar hamburger](images/2-qradar-hamburger.png#centreme)
 
-In there, click on **Log Sources**.  
+In there, click on **Log Sources**.
 
 ![QRadar log sources](images/2-qradar-log-sources.png#centreme)
 
@@ -415,7 +351,7 @@ A new window opens and shows the new log sources.
 In Check Point the easiest way to verify that the log source is set is indeed via command line. From the terminal of your VS Code online editor, use SSH to log into the Check Point management server IP with the user admin and issue the following `ls` command:
 
 ```bash
-[student<X>@ansible-1 ~]$ ssh admin@checkpoint_mgmt
+[student@ansible-1 ~]$ ssh admin@checkpoint_mgmt
 [Expert@gw-77f3f6:0]# ls -l /opt/CPrt-R80/log_exporter/targets
 total 0
 drwxr-xr-x 6 admin root 168 Sep 16 11:23 syslog-22.33.44.55
@@ -426,7 +362,7 @@ As you can see the central log server was configured via Check Point's internal 
 Let's also verify that the Snort configuration in the background was successful. From the terminal of your VS Code online editor, log onto your Snort instance via SSH as the user `ec2-user`. Become root and verify the rsyslog forwarding configuration:
 
 ```bash
-[student<X>@ansible-1 ~]$ ssh ec2-user@snort
+[student@ansible-1 ~]$ ssh ec2-user@snort
 Last login: Wed Sep 11 15:45:00 2019 from 11.22.33.44
 [ec2-user@snort ~] sudo cat /etc/rsyslog.d/ids_confg_snort_rsyslog.conf
 $ModLoad imfile
@@ -445,7 +381,7 @@ Note that so far no logs are sent from Snort to QRadar: Snort does not know yet 
 
 But as a security analyst, with more data at our disposal, we finally have a better idea of what could be the cause of the anomaly in the application behavior. We see the logs from the firewall, see who is sending traffic to who, but there's still not enough data to dismiss the event as a false positive.
 
-## Step 1.7 - Add Snort signature
+## 2.1.7 Add Snort signature
 
 To decide if this anomaly is a false positive, as a security analyst you need to exclude any potential attack. Given the data at your disposal you decide to implement a new signature on the IDS to get alert logs if such traffic is detected again.
 
@@ -484,19 +420,19 @@ In this play we provide some variables for Snort stating that we want to control
 Now execute the playbook:
 
 ```bash
-[student<X>@ansible-1 ~]$ ansible-navigator run enrich_snort_rule.yml --mode stdout
+[student@ansible-1 ~]$ ansible-navigator run enrich_snort_rule.yml --mode stdout
 ```
 
 Let's quickly verify that the new rule was indeed added. From the terminal of your VS Code online editor, ssh to the Snort server as `ec2-user` and have a look into the directory of custom rules:
 
 ```bash
-[student<X>@ansible-1 ~]$ ssh ec2-user@snort
+[student@ansible-1 ~]$ ssh ec2-user@snort
 Last login: Fri Sep 20 15:09:40 2019 from 54.85.79.232
 [ec2-user@snort ~]$ sudo grep web_attack /etc/snort/rules/local.rules
 alert tcp any any -> any any  (msg:"Attempted Web Attack"; uricontent:"/web_attack_simulation"; classtype:web-application-attack; sid:99000020; priority:1; rev:1;)
 ```
 
-## Step 1.8 - Identify and close the Offense
+## 2.1.8 Identify and close the Offense
 
 Moments after the playbook has been executed, we can check in QRadar if we see Offenses. And indeed, that is the case. Log into your QRadar UI, click on **Offenses**, and there on the left side on **All Offenses**:
 
@@ -508,7 +444,7 @@ The next step would be to get in touch with the team responsible for that machin
 
 In the Offense view, click on the Offense, then in the menu on top on **Actions**, In the drop-down menu-click on **close**. A window will pop up where you can enter additional information and finally close the offense as a false positive.
 
-## Step 1.9 - Rollback
+## 2.1.9 Rollback
 
 In the final step, we will rollback all configuration changes to their pre-investigation state, reducing resource consumption and the analysis workload for us and our fellow security analysts. Also we need to stop the attack simulation.
 
@@ -595,7 +531,7 @@ While this playbook is maybe the longest you see in these entire exercises, the 
 Run the playbook to remove the log sources:
 
 ```bash
-[student<X>@ansible-1 ~]$ ansible-navigator run rollback.yml --mode stdout
+[student@ansible-1 ~]$ ansible-navigator run rollback.yml --mode stdout
 ```
 
 Also, we'll need to stop the process which simulates the web attack. Let's create a simple playbook that uses the `shell` module to stop the process running on the **attacker** machine.
@@ -621,7 +557,7 @@ Let's create a new playbook called `stop_attack_simulation.yml` using the VS Cod
 And then, run the `stop_attack_simulation.yml` playbook.
 <!-- {% raw %} -->
 ```bash
-[student<X>@ansible-1 ~]$ ansible-navigator run stop_attack_simulation.yml --mode stdout
+[student@ansible-1 ~]$ ansible-navigator run stop_attack_simulation.yml --mode stdout
 ```
 <!-- {% endraw %} -->
 

@@ -12,35 +12,78 @@ The `github.com/ansible/workshops` contains an Ansible Playbook `provision_lab.y
 | Ansible Windows Automation  | `workshop_type: windows`    |
 | Ansible Demo Mode  | `workshop_type: demo`    |
 | Smart Management Workshop | `workshop_type: smart_mgmt` |
+| Automated Satellite Workshop | `workshop_type: auto_satellite` |
 
 ## Table Of Contents
 
-  * [Requirements](#requirements)
-  * [Lab Setup](#lab-setup)
-    * [One Time Setup](#one-time-setup)
-    * [Setup (per workshop)](#setup-per-workshop)
-    * [Accessing student documentation and slides](#accessing-student-documentation-and-slides)
-    * [Accessing instructor inventory](#accessing-instructor-inventory)
-    * [DNS](#dns)
-    * [Smart Management](#smart-management)
-  * [Developer Mode and understanding collections](#developer-mode-and-understanding-collections)
-  * [Lab Teardown](#lab-teardown)
-  * [Demos](#demos)
-  * [FAQ](#faq)
-  * [More info on what is happening](#more-info-on-what-is-happening)
-  * [Getting Help](#getting-help)
+<!-- TOC titleSize:2 tabSpaces:2 depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 skip:0 title:1 charForUnorderedList:* -->
+## Table of Contents
+- [Ansible Automation Workshop Provisioner](#ansible-automation-workshop-provisioner)
+  - [Table Of Contents](#table-of-contents)
+  - [Table of Contents](#table-of-contents-1)
+  - [Requirements](#requirements)
+  - [Lab Setup](#lab-setup)
+    - [One Time Setup](#one-time-setup)
+  - [Ansible-Navigator](#ansible-navigator)
+    - [1. AWS Creds for Execution Environments](#1-aws-creds-for-execution-environments)
+    - [2. Running Ansible-Navigator from the project root](#2-running-ansible-navigator-from-the-project-root)
+    - [Setup (per workshop)](#setup-per-workshop)
+    - [Automation controller license](#automation-controller-license)
+    - [Automating the download of aap.tar.gz](#automating-the-download-of-aaptargz)
+    - [Additional examples](#additional-examples)
+    - [Accessing student documentation and slides](#accessing-student-documentation-and-slides)
+    - [Accessing instructor inventory](#accessing-instructor-inventory)
+    - [DNS](#dns)
+    - [Smart Management](#smart-management)
+    - [Automated Satellite](#automated-satellite)
+    - [devcontainer](#devcontainer)
+  - [Developer Mode and understanding collections](#developer-mode-and-understanding-collections)
+  - [Lab Teardown](#lab-teardown)
+  - [Demos](#demos)
+  - [FAQ](#faq)
+  - [More info on what is happening](#more-info-on-what-is-happening)
+- [Getting Help](#getting-help)
 <!-- /TOC -->
 
 ## Requirements
 
-* This provisioner must be run with `ansible-core` v2.11 or higher.
-* AWS Account (follow directions on one time setup below)
+* You can either use an execution environment (preferred) or install all the requirements into a virtual environment
+  * Required collections are listed in [requirements.yml](../collections/requirements.yml)
+  * Required Python packages are listed in [requirements.txt](../requirements.txt)
+  * `ansible-navigator` if you are going to use execution environments
+
+* AWS Account (follow directions in one time setup below)
 
 ## Lab Setup
 
 ### One Time Setup
 
 [For One Time Setup - click here](../docs/setup.md)
+
+## Ansible-Navigator
+
+If you are going to use ansible-navigator and the workshop execution environment there are two (2) differences from ansible-playbook method used previously:
+
+### 1. AWS Creds for Execution Environments
+
+You need to set your AWS credentials as environment variables.  This is because the execution environment will not have access to your ~/.aws/credentials file.  This is preferred anyway because it matches the behavior in Automation controller.
+
+```
+export AWS_ACCESS_KEY_ID=AKIA6ABLAH1223VBD3W
+export AWS_SECRET_ACCESS_KEY=zh6gFREbvblahblahblahfXIC5nZr51OgdKECaSIMBi9Kc
+```
+
+To make environment variables permanent and persistent you can set this to your `~/.bash_rc`.  See Red Hat Knowledge Base article: [https://access.redhat.com/solutions/157293](https://access.redhat.com/solutions/157293)
+
+### 2. Running Ansible-Navigator from the project root
+
+You must run from the project root rather than the `/provisioner` folder.  This is so all the files in the Git project are mounted, not just the provisioner folder.  This is also best practice because it matches the behavior in Automation controller.
+
+For example:
+
+```
+ansible-navigator run provisioner/provision_lab.yml -e @provisioner/extra_vars.yml
+```
 
 ### Setup (per workshop)
 
@@ -85,6 +128,12 @@ controllerinstall: true
 # forces ansible.workshops collection to install latest edits every time
 developer_mode: true
 
+# SHA value of targeted AAP bundle setup files.
+provided_sha_value: ea2843fae672274cb1b32447c9a54c627aa5bdf5577d9a6c7f957efe68be8c01
+
+# Automation controller install setup command. Default: "./setup.sh -e gpgcheck=0" if undefined or empty
+controller_install_command: './setup.sh -e gpgcheck=0'
+
 # default vars for ec2 AMIs (ec2_info) are located in provisioner/roles/manage_ec2_instances/defaults/main/main.yml
 # select ec2_info AMI vars can be overwritten via ec2_xtra vars, e.g.:
 ec2_xtra:
@@ -94,6 +143,24 @@ ec2_xtra:
     username: ec2-user
     os_type: linux
     size: r5b.2xlarge
+
+# Registry name to download execution environments
+ee_registry_name: registry.redhat.io
+
+# List of execution environments to download during controller installation:
+ee_images:
+   - "{{ ee_registry_name }}/ansible-automation-platform-21/ee-29-rhel8:latest"
+   - "{{ ee_registry_name }}/ee-supported-rhel8:latest"
+   - "{{ ee_registry_name }}/ansible-automation-platform-21/ee-minimal-rhel8:latest"
+
+# "Default execution environment" for controller
+ee_default_image: "{{ ee_registry_name }}/ee-supported-rhel8:latest"
+
+# By default pre_build is set to true, this allows people with access to specific AMIs 
+# built by the Red Hat Ansible Team to be shared with AWS organizations/accounts to speed up
+# provisioning and reduce errors
+pre_build: false
+
 ```
 ### Automation controller license
 
@@ -105,7 +172,7 @@ In order to use Automation controller (i.e. `controllerinstall: true`), which is
 
 **How do you use the manifest.zip with the workshop?**
 
-There are currently two ways to integrate your license file with the workshop:
+These are the ways to integrate your license file with the workshop:
 
 1. Put the manifest.zip file into provisioner folder
 
@@ -115,7 +182,7 @@ There are currently two ways to integrate your license file with the workshop:
 
   The second way is to turn the `manifest.zip `into a base64 variable.
 
-    This allows the `manifest.zip` to be treated like an Ansible variable so that it can work with CI systems like Github Actions or Zuul.  This also makes it easier to work with Automation controller, in case you are spinning up a workshop using Automation controller itself.
+  This allows the `manifest.zip` to be treated like an Ansible variable so that it can work with CI systems like Github Actions or Zuul.  This also makes it easier to work with Automation controller, in case you are spinning up a workshop using Automation controller itself.
 
   To do this use the `base64` command to encode the manifest:
 
@@ -137,6 +204,26 @@ There are currently two ways to integrate your license file with the workshop:
   >
   >base64 is not encryption, if you require encryption you need to work within your CI system or Automation controller to encrypt the base64 encoded manifest.zip.
 
+3. Download the manifest.zip from a URL
+
+  If you specify the following variables, the provisioner will download the manifest.zip from an authenticated URL:
+
+  ```
+  manifest_download_url: https://www.example.com/protected/manifest.zip
+  manifest_download_user: username
+  manifest_download_password: password
+  ```
+
+### Automating the download of aap.tar.gz 
+
+If you have the aap.tar.gz tarball in a secure URL, you can automate the downloading of it by specifying the following variables.
+Note that the tarball specified in the URL must match the SHA value defined in provided_sha_value
+
+  ```
+  aap_download_url: https://www.example.com/protected/aap.tar.gz
+  aap_download_user: username
+  aap_download_password: password
+  ```
 
 ### Additional examples
 
@@ -150,7 +237,8 @@ For more extra_vars examples, look at the following:
 * [sample-vars-rhel-90.yml](sample_workshops/sample-vars-tower-auto.yml) - example for Tower installation and licensing
 * [sample-vars-rhel-90.yml](sample_workshops/sample-vars-rhel-90.yml) - example for `rhel_90` workshop, meant to be taught in 90 minutes
 * [sample-vars-demo.yml](sample_workshops/sample-vars-demo.yml) - example for `demo` mode, aggregate of all workshop topologies
-* [sameple-vars-smart_mgmt.yml](sample_workshops/sample-vars-smart_mgmt.yml) - example for `smart_mgmt` workshop. [Read Notes](#smart-management)
+* [sample-vars-smart_mgmt.yml](sample_workshops/sample-vars-smart_mgmt.yml) - example for `smart_mgmt` workshop. [Read Notes](#smart-management)
+* [sample-vars-auto_satellite.yml](sample_workshops/sample-vars-auto_satellite.yml) - example for `auto_satellite` workshop. [Read Notes](#automated-satellite)
 
 * Run the playbook:
 
@@ -196,6 +284,17 @@ The Smart Management Lab relies on a prebuilt AMI for Red Hat Satellite Server. 
 
 The Smart Management Lab also requires AWS DNS to be enabled. See [sample vars](./sample_workshops/sample-vars-smart_mgmt.yml) for required configuration.
 
+### Automated Satellite
+
+The Automated Satellite Lab relies on a prebuilt AMI for Red Hat Satellite Server. An example for building this AMI can be found [here](https://github.com/heatmiser/packer-ansible-ec2/tree/satellite-6.12).
+
+The Automated Satellite Lab also requires AWS DNS to be enabled. See [sample vars](./sample_workshops/sample-vars-auto_satellite.yml) for required configuration.
+### devcontainer
+
+For convenience, a devcontainer has been configured for use within this project. This setup allows workshop developers to run the workspace along with provisioner within a Docker container. The devcontainer has support for docker-in-docker so that `ansible-navigator` can run against the workshop execution environment to provision workshops. 
+
+See the `devcontainer.json` in the `.devcontainer` directory at the top level of this repository. For more information regarding devcontainers, see [here](https://code.visualstudio.com/docs/devcontainers/containers).
+
 ## Developer Mode and understanding collections
 
 The Ansible Workshops are actually a collection.  Every role is called using the FQCN (fully qualified collection name).  For example to setup the control node (e.g. install Automation controller) we call the role
@@ -226,6 +325,8 @@ ansible-playbook teardown_lab.yml -e @extra_vars.yml
 ```bash
 ansible-playbook teardown_lab.yml -e @extra_vars.yml -e debug_teardown=true
 ```
+
+Note: Replace `ansible-playbook` with `ansible-navigator run` if using `ansible-navigator`.
 
 ## Demos
 

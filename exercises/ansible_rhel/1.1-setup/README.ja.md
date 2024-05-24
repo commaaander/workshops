@@ -1,109 +1,145 @@
-# Workshop Exercise - Check the Prerequisites
+# ワークショップ演習 - 前提条件の確認
 
-**その他の言語はこちらをお読みください。**:
-<br>![uk](../../../images/uk.png) [English](README.md),  ![japan](../../../images/japan.png)[日本語](README.ja.md), ![brazil](../../../images/brazil.png) [Portugues do Brasil](README.pt-br.md), ![france](../../../images/fr.png) [Française](README.fr.md),![Español](../../../images/col.png) [Español](README.es.md).
+**他の言語で読む**:
+<br>![uk](../../../images/uk.png) [英語](README.md), ![japan](../../../images/japan.png) [日本語](README.ja.md), ![brazil](../../../images/brazil.png) [ブラジルのポルトガル語](README.pt-br.md), ![france](../../../images/fr.png) [フランス語](README.fr.md), ![Español](../../../images/col.png) [スペイン語](README.es.md).
 
 ## 目次
 
-* [目的](#objective)
-* [ガイド](#guide)
-* [ラボ環境](#your-lab-environment)
-* [Step 1 - ラボ環境へのアクセス](#step-1---access-the-environment)
-* [Step 2 - ラボの作業](#step-2---working-the-labs)
-* [Step 3 - チャレンジラボ](#step-3---challenge-labs)
+- [ワークショップ演習 - 前提条件の確認](#ワークショップ演習---前提条件の確認)
+  - [目次](#目次)
+  - [目的](#目的)
+  - [ガイド](#ガイド)
+    - [あなたのラボ環境](#あなたのラボ環境)
+    - [ステップ 1 - 環境へのアクセス](#ステップ-1---環境へのアクセス)
+    - [ステップ 2 - ターミナルの使用](#ステップ-2---ターミナルの使用)
+    - [ステップ 3 - 実行環境の検討](#ステップ-3---実行環境の検討)
+    - [ステップ 4 - ansible-navigatorの設定の検討](#ステップ-4---ansible-navigatorの設定の検討)
+    - [ステップ 5 - チャレンジラボ](#ステップ-5---チャレンジラボ)
 
 ## 目的
 
-* ラボトポロジーと環境へのアクセス方法を理解する。
-* ワークショップの演習の仕組みを理解する。
-* チャレンジラボについて理解する。
+* ラボトポロジーを理解する：ラボ環境とアクセス方法に慣れる。
+* ワークショップの演習をマスターする：ワークショップのタスクをナビゲートし、実行するスキルを習得する。
+* チャレンジラボを受け入れる：実践的なチャレンジシナリオで知識を適用する方法を学ぶ。
 
 ## ガイド
 
-### ラボ環境
+このワークショップの初期段階は、Ansibleオートメーションプラットフォームのコマンドラインユーティリティに焦点を当てています。例えば:
 
-このラボでは、事前設定されたラボ環境で作業します。ここでは、以下のホストにアクセスできます。
+- [ansible-navigator](https://github.com/ansible/ansible-navigator) - Ansibleコンテンツを実行および開発するためのテキストベースのユーザーインターフェイス（TUI）。
+- [ansible-core](https://docs.ansible.com/core.html) - `ansible`、`ansible-playbook`、`ansible-doc`などのCLIツールを含む、Ansibleオートメーションプラットフォームを支えるフレームワーク、言語、機能を提供するベース実行可能ファイル。
+- [実行環境](https://docs.ansible.com/automation-controller/latest/html/userguide/execution_environments.html) - Red Hatがサポートするコレクションを含む、事前に構築されたコンテナイメージ。
+- [ansible-builder](https://github.com/ansible/ansible-builder) - 実行環境の構築プロセスを自動化します。このワークショップでは主な焦点ではありません。
 
-| Role                 | Inventory name |
-| ---------------------| ---------------|
-| Ansible Control Host | ansible-1      |
-| Managed Host 1       | node1          |
-| Managed Host 2       | node2          |
-| Managed Host 3       | node3          |
+新しいAnsibleオートメーションプラットフォームコンポーネントの詳細については、このランディングページをブックマークしてください [https://red.ht/AAP-20](https://red.ht/AAP-20)
 
-### Step 1 - 環境へのアクセス
+### あなたのラボ環境
 
-SSH 経由でコントロールホストにログインします。
+以下のホストを含む事前設定された環境で作業します:
 
-> **Warning**
->
-> **11.22.33.44** はお使いの環境の **IP** に変更します。student**X** の **X** は、指定の学習者 ID に変更します。
+| 役割                    | インベントリ名   |
+| ----------------------- | --------------- |
+| Ansibleコントロールホスト | ansible-1       |
+| 管理ホスト1             | node1           |
+| 管理ホスト2             | node2           |
+| 管理ホスト3             | node3           |
 
-```bash
-ssh studentX@11.22.33.44
-```
+### ステップ 1 - 環境へのアクセス
 
-> **ヒント**
->
-> パスワードは、インストラクターから渡されます。
+このワークショップでは、統合ファイルブラウザ、構文強調表示エディタ、ブラウザ内ターミナルを備えたVisual Studio Codeの使用をお勧めします。直接SSHアクセスも利用可能です。ワークベンチ環境へのアクセスに関するこのYouTubeチュートリアルをチェックしてください。
 
-次に、root に切り替えます。
+注意: 追加の明確化が必要な場合は、短いYouTubeビデオが提供されています：
+[Ansible Workshops - ワークベンチ環境へのアクセス](https://youtu.be/Y_Gx4ZBfcuk)
 
-```bash
-[student<X>@ansible-1 ~]$ sudo -i
-```
+1. ワークショップの起動ページからVisual Studio Codeに接続します。
 
-以下のような前提条件タスクの多くは既に完了しています。
+  ![起動ページ](images/launch_page.png)
 
-* Ansible ソフトウェアのインストール
-* SSH 接続および鍵の設定
-* root 権限が必要なコマンドを実行できるように、`sudo` が管理対象ホストで設定されています。
+2. 提供されたパスワードを入力してログインします。
 
-Ansible が正しくインストールされていることを確認します。
+  ![VS Codeのログイン](images/vscode_login.png)
 
-```bash
-[root@ansible-1 ~]# ansible --version
-ansible 2.7.0
-[...]
-```
+### ステップ 2 - ターミナルの使用
 
-> **注意** >
->
-> Ansible では、設定管理を容易に保っています。データベースやデーモンを実行する必要はなく、ノートパソコン上で簡単に実行できます。管理対象ホストで、エージェントを実行する必要は必要ありません。
+1. Visual Studio Codeでターミナルを開きます:
 
-root アカウントから再度ログアウトします。
+  ![新しいターミナルの画像](images/vscode-new-terminal.png)
+
+2. Ansibleコントロールノードのターミナルで`rhel-workshop`ディレクトリに移動します。
 
 ```bash
-[root@ansible-1 ~]# exit
-logout
+[student@ansible-1 ~]$ cd ~/rhel-workshop/
+[student@ansible-1 rhel-workshop]$ pwd
+/home/student/rhel-workshop
 ```
 
-> **注意** >
->
-> 後続のすべての演習では、明示的に指示されない限り、コントロールノードで stundet\<X\> ユーザーとして作業してください。
+* `~`: ホームディレクトリ`/home/student`のショートカット
+* `cd`: ディレクトリを変更するコマンド
+* `pwd`: 現在の作業ディレクトリの完全なパスを表示します。
 
-### Step 2 - ラボの作業
+### ステップ 3 - 実行環境の検討
 
-おわかりの通り、このラボは、コマンドラインを中心に使います。
+1. `ansible-navigator images`を実行して、設定された実行環境を表示します。
+2. 対応する番号を使用してEEを調査します。例えば、`ee-supported-rhel8`を開くために2を押します。
 
-* すべてを手動入力する必要はありません。ブラウザーからコピーペーストしてください。ただし、特に手を止めて理解を深めるようにしてください。
+```bash
+$ ansible-navigator images
+```
 
-* すべてのラボは、**Vim** を使用して準備しています。誰もが好むエディターではないことは承知しています。これは自由に変更できます。ラボ環境では
-  **Midnight Commander** (**mc** を実行。ファンクションキーは Esc-\<n\> で、マウスクリックでも可能)
-  を利用できます。または、**Nano** (**nano** と実行) も利用可能です。これは簡易紹介
-  [エディター紹介](../0.0-support-docs/editor_intro.md) です。
+![ansible-navigatorの画像](images/navigator-images.png)
 
-> **ヒント** >
->
-> このラボガイドでは、その状況で意味がわかりやすいかどうかに関係なく、予期される出力ありなしで、実行するコマンドが表示されます。
+> 注意: あなたが見る出力は上記の出力と異なる場合があります
 
-### Step 3 - チャレンジラボ
+![eeメインメニュー](images/navigator-ee-menu.png)
 
-これらのラボガイドの多数の章には、「チャレンジラボ」セクションが用意されています。これらのラボは、これまで学んだ知識で解決するための小さなタスクを行うことを目的としています。タスクの回答は、警告サインの下に表示されます。
+`2`を選択すると`Ansibleバージョンとコレクション`が表示され、その特定のEEにインストールされているすべてのAnsibleコレクションと`ansible-core`のバージョンが表示されます：
+
+![ee情報](images/navigator-ee-collections.png)
+
+### ステップ 4 - ansible-navigatorの設定の検討
+
+1. Visual Studio Codeまたは`cat`コマンドを使用して`~/.ansible-navigator.yml`の内容を表示します。
+
+```bash
+$ cat ~/.ansible-navigator.yml
+---
+ansible-navigator:
+  ansible:
+    inventory:
+      entries:
+      - /home/student/lab_inventory/hosts
+
+  execution-environment:
+    image: registry.redhat.io/ansible-automation-platform-20-early-access/ee-supported-rhel8:2.0.0
+    enabled: true
+    container-engine: podman
+    pull:
+      policy: missing
+    volume-mounts:
+    - src: "/etc/ansible/"
+      dest: "/etc/ansible/"
+```
+
+2. `ansible-navigator.yml`ファイル内の以下のパラメーターに注意してください：
+
+* `inventories`: 使用されているansibleインベントリの場所を示します
+* `execution-environment`: デフォルトの実行環境が設定されている場所
+
+設定可能なすべてのノブの完全なリストについては、[ドキュメント](https://ansible.readthedocs.io/projects/navigator/settings/)をチェックしてください。
+
+### ステップ 5 - チャレンジラボ
+
+各章にはチャレンジラボが付属しています。これらのタスクは、学んだ概念の理解と適用をテストします。解決策は警告サインの下に提供されています。
 
 ---
-**ラビゲーション**
+**ナビゲーション**
+
 <br>
-[次の演習](../1.2-thebasics/README.ja.md)
+
+{% if page.url contains 'ansible_rhel_90' %}
+[Next Exercise](../2-thebasics)
+{% else %}
+[Next Exercise](../1.2-thebasics)
+{% endif %}
 <br><br>
-[こちらをクリックして、Ansible for Red Hat Enterprise Linux ワークショップに戻ります](../README.md)
+[Click here to return to the Ansible for Red Hat Enterprise Linux Workshop](../README.md)

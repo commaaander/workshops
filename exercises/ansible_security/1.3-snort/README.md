@@ -1,91 +1,20 @@
-# Exercise 1.3 - Executing the first Snort playbook
+{% include sec_workshop_credentials.md %}
+# 1.3 Executing the first Snort playbook
 
-**Read this in other languages**: <br>
-[![uk](../../../images/uk.png) English](README.md),  [![japan](../../../images/japan.png) 日本語](README.ja.md), [![france](../../../images/fr.png) Français](README.fr.md).<br>
+<!-- **Read this in other languages**: <br>
+[![uk](../../../images/uk.png) English](README.md),  [![japan](../../../images/japan.png) 日本語](README.ja.md), [![france](../../../images/fr.png) Français](README.fr.md).<br> -->
 
-<div id="section_title">
-  <a data-toggle="collapse" href="#collapse2">
-    <h3>Workshop access</h3>
-  </a>
-</div>
-<div id="collapse2" class="panel-collapse collapse">
-  <table>
-    <thead>
-      <tr>
-        <th>Role</th>
-        <th>Inventory name</th>
-        <th>Hostname</th>
-        <th>Username</th>
-        <th>Password</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Ansible Control Host</td>
-        <td>ansible</td>
-        <td>ansible-1</td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>IBM QRadar</td>
-        <td>qradar</td>
-        <td>qradar</td>
-        <td>admin</td>
-        <td>Ansible1!</td>
-      </tr>
-      <tr>
-        <td>Attacker</td>
-        <td>attacker</td>
-        <td>attacker</td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>Snort</td>
-        <td>snort</td>
-        <td>snort</td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>Check Point Management Server</td>
-        <td>checkpoint</td>
-        <td>checkpoint_mgmt</td>
-        <td>admin</td>
-        <td>admin123</td>
-      </tr>
-      <tr>
-        <td>Check Point Gateway</td>
-        <td>-</td>
-        <td>checkpoint_gw</td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>Windows Workstation</td>
-        <td>windows-ws</td>
-        <td>windows_ws</td>
-        <td>administrator</td>
-        <td><em>Provided by Instructor</em></td>
-      </tr>
-    </tbody>
-  </table>
-  <blockquote>
-    <p><strong>Note</strong></p>
-    <p>
-    The workshop includes preconfigured SSH keys to log into Red Hat Enterprise Linux hosts and don't need a username and password to log in.</p>
-  </blockquote>
-</div>
+- TOC
+{:toc}
 
-## Step 3.1 - Snort
+## 1.3.1 Snort
 
 To showcase how to automate a network intrusion detection and intrusion prevention system in a security environment, this lab will take you through managing a Snort IDS instance. Snort analyzes network traffic and compares it against some given rule set.
 In this lab, Snort is installed on a Red Hat Enterprise Linux machine and Ansible interacts with it by accessing the RHEL node over SSH.
 
-## Step 3.2 - Accessing the Snort server
+## 1.3.2. Accessing the Snort server
 
-In order to connect to the Snort installation, we need to to find the IP address of the machine it is installed on. You can then get the IP address of the Snort machine by looking up the information on the inventory file `~/lab_inventory/hosts`. In your VS Code online editor, in the menu bar click on **File** > **Open File...** and open the file `/home/student<X>/lab_inventory/hosts`. Search and find the entry for snort which looks like this:
+In order to connect to the Snort installation, we need to to find the IP address of the machine it is installed on. You can then get the IP address of the Snort machine by looking up the information on the inventory file `~/lab_inventory/hosts`. In your VS Code online editor, in the menu bar click on **File** > **Open File...** and open the file `/home/student/lab_inventory/hosts`. Search and find the entry for snort which looks like this:
 
 ```bash
 snort ansible_host=22.333.44.5 ansible_user=ec2-user private_ip=172.16.1.2
@@ -98,7 +27,7 @@ snort ansible_host=22.333.44.5 ansible_user=ec2-user private_ip=172.16.1.2
 The connection tp the Snort server uses a SSH key pre-installed on the control host, the user for the Snort server is `ec2-user`. In your VS Code online editor, open a terminal and access the snort server via:
 
 ```bash
-[student<X>@ansible-1 ~]$ ssh ec2-user@snort
+[student@ansible-1 ~]$ ssh ec2-user@snort
 Warning: Permanently added '22.333.44.5' (ECDSA) to the list of known hosts.
 Last login: Mon Aug 26 12:17:48 2019 from h-213.61.244.2.host.de.colt.net
 [ec2-user@snort ~]$
@@ -138,7 +67,7 @@ Also, check if the service is actively running via `sudo systemctl`:
 
 Exit the Snort server now by pressing `CTRL` and `D`, or by typing `exit` on the command line. All further interaction will be done via Ansible from the Ansible control host.
 
-## Step 3.3 - Simple Snort rules
+## 1.3.3 Simple Snort rules
 
 In the most basic capacity, Snort works by reading some rules and acting according to them. In this lab, we will be working with some simple examples of Snort in order to show how to automate this configuration with Ansible. This session is not designed to dive into the specifics of Snort rules and the complexity involved in large setups, however, it is helpful to understand the basic structure of a simple rule so that you are aware of what you are automating.
 
@@ -172,7 +101,7 @@ A Snort rule's outline is as follows:
 
 If you want to learn more about Snort rules, check out the [Snort Rule Infographic](https://www.snort.org/documents/snort-rule-infographic) or dive into the [Snort Users Manual (PDF)](https://www.snort.org/documents/snort-users-manual). If you want to have a look at some real Snort rules you can also access the Snort installation in your lab and look at the content of the `/etc/snort/rules` directory.
 
-## Step 3.4 - Example playbook
+## 1.3.4 Example playbook
 
  As discussed earlier, Ansible automation is described in playbooks. Playbooks consist of tasks. Each task uses a module and the module's corresponding parameters to describe the change that needs to be done or the state that is desired.
 
@@ -209,7 +138,7 @@ Next we need to add the variables required by our playbook. The role we are usin
     ids_provider: snort
 ```
 
-Next, we need to add the tasks. Tasks are the components which make the actual changes on the target machines. Since we are using a role, we can simply use a single step in our tasks, `include_role`, to add it to our playbook. 
+Next, we need to add the tasks. Tasks are the components which make the actual changes on the target machines. Since we are using a role, we can simply use a single step in our tasks, `include_role`, to add it to our playbook.
 
 >Note
 >
@@ -248,12 +177,12 @@ The rule options define the human readable Snort message if and when the rule fi
 
 The other variables, `ids_rules_file` and  `ids_rule_state` provide the user defined location for the rules file and state that the rule should be created if it does not exist already (`present`).
 
-## Step 3.5 - Run the playbook
+## 1.3.5 Run the playbook
 
 It is now time to execute the playbook. In your VS Code online editor. In the terminal, execute the following command:
 
 ```bash
-[student1@ansible-1 ~]$ ansible-navigator run add_snort_rule.yml --mode stdout
+[student@ansible-1 ~]$ ansible-navigator run add_snort_rule.yml --mode stdout
 
 PLAY [Add Snort rule] *****************************************************************
 
@@ -275,7 +204,7 @@ TASK [ansible_security.ids_rule : verify required variable ids_rule_state is def
 skipping: [snort]
 
 TASK [ansible_security.ids_rule : include ids_provider tasks] *************************
-included: /home/student1/.ansible/roles/ansible_security.ids_rule/tasks/snort.yml for
+included: /home/student/.ansible/roles/ansible_security.ids_rule/tasks/snort.yml for
 snort
 
 TASK [ansible_security.ids_rule : snort_rule] *****************************************
@@ -292,7 +221,7 @@ As you can see when you run this playbook, there are many tasks executed in addi
 
 This yet again highlights the value of using roles. By taking advantage of roles, you are not only making your content re-usable but you can also add verification tasks and other important steps and keep them neatly hidden inside the role. The users of the role do not need to know the specifics of how Snort works in order to use this role as part of their security automation.
 
-## Step 3.6 - Verify changes
+## 1.3.6 Verify changes
 
 A quick way to check if the rules were written correctly is to SSH to the Snort server and look for the content of the `/etc/snort/rules/local.rules` file.
 
@@ -358,7 +287,7 @@ And most importantly, we want to be able to see what is actually found. The `ids
 Now let's execute the playbook to verify that our rule is part of the Snort installation:
 
 ```bash
-[student<X>@ansible-1 ~]$ ansible-navigator run verify_attack_rule.yml --mode stdout
+[student@ansible-1 ~]$ ansible-navigator run verify_attack_rule.yml --mode stdout
 
 PLAY [Verify Snort rule] **************************************************************
 
@@ -386,6 +315,6 @@ Congratulations! You have completed the first steps of automating Snort with Ans
 
 **Navigation**
 <br><br>
-[Previous Exercise](../1.2-checkpoint/README.md) | [Next Exercise](../1.4-qradar/README.md) 
+[Previous Exercise](../1.2-checkpoint/README.md) | [Next Exercise](../1.4-qradar/README.md)
 <br><br>
 [Click here to return to the Ansible for Red Hat Enterprise Linux Workshop](../README.md)

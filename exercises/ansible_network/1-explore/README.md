@@ -1,21 +1,23 @@
 # Exercise 1 - Exploring the lab environment
 
-**Read this in other languages**: ![uk](https://github.com/ansible/workshops/raw/devel/images/uk.png) [English](README.md),  ![japan](https://github.com/ansible/workshops/raw/devel/images/japan.png) [日本語](README.ja.md).
+**Read this in other languages**: ![uk](https://github.com/ansible/workshops/raw/devel/images/uk.png) [English](README.md),  ![japan](https://github.com/ansible/workshops/raw/devel/images/japan.png) [日本語](README.ja.md), ![Español](https://github.com/ansible/workshops/raw/devel/images/es.png) [Español](README.es.md).
 
 ## Table of Contents
 
-* [Objective](#objective)
-* [Diagram](#diagram)
-* [Guide](#guide)
-   * [Step 1 - Connecting via VS Code](#step-1---connecting-via-vs-code)
-   * [Step 2 - Using the Terminal](#step-2---using-the-terminal)
-   * [Step 3 - Examining Execution Environments](#step-3---examining-execution-environments)
-   * [Step 4 - Examining the ansible-navigator configuration](#step-4---examining-the-ansible-navigator-configuration)
-   * [Step 5 - Examining inventory](#step-5---examining-inventory)
-   * [Step 6 - Understanding inventory](#step-6---understanding-inventory)
-   * [Step 7 - Using ansible-navigator to explore inventory](#step-7---using-ansible-navigator-to-explore-inventory)
-   * [Step 8 - Connecting to network devices](#step-8---connecting-to-network-devices)
-* [Complete](#complete)
+- [Exercise 1 - Exploring the lab environment](#exercise-1---exploring-the-lab-environment)
+  - [Table of Contents](#table-of-contents)
+  - [Objective](#objective)
+  - [Diagram](#diagram)
+  - [Guide](#guide)
+    - [Step 1 - Connecting via VS Code](#step-1---connecting-via-vs-code)
+    - [Step 2 - Using the Terminal](#step-2---using-the-terminal)
+    - [Step 3 - Examining Execution Environments](#step-3---examining-execution-environments)
+    - [Step 4 - Examining the ansible-navigator configuration](#step-4---examining-the-ansible-navigator-configuration)
+    - [Step 5 - Examining inventory](#step-5---examining-inventory)
+    - [Step 6 - Understanding inventory](#step-6---understanding-inventory)
+    - [Step 7 - Using ansible-navigator to explore inventory](#step-7---using-ansible-navigator-to-explore-inventory)
+    - [Step 8 - Connecting to network devices](#step-8---connecting-to-network-devices)
+  - [Complete](#complete)
 
 ## Objective
 
@@ -30,9 +32,9 @@ These first few lab exercises will be exploring the command-line utilities of th
 
 If you need more information on new Ansible Automation Platform components bookmark this landing page [https://red.ht/AAP-20](https://red.ht/AAP-20)
 
-> Chat with us
+> Join our community forum!
 >
-> Before you get started, please join us on slack! <a href="https://join.slack.com/t/ansiblenetwork/shared_invite/zt-3zeqmhhx-zuID9uJqbbpZ2KdVeTwvzw">Click here to join the ansiblenetwork slack</a>.  This will allow you to chat with other network automation engineers and get help after the workshops concludes.  If the link goes stale please email <a href="mailto:ansible-network@redhat.com">Ansible Technical Marketing</a></th>
+> Before you get started, please join us on <a target="_new" href="https://forum.ansible.com/">https://forum.ansible.com/</a>.  This will allow you to get Ansible help after the workshops concludes.
 
 
 ## Diagram
@@ -85,13 +87,13 @@ If you need more information on new Ansible Automation Platform components bookm
 Navigate to the `network-workshop` directory on the Ansible control node terminal.
 
 ```bash
-[student1@ansible-1 ~]$ cd ~/network-workshop/
-[student1@ansible-1 network-workshop]$ pwd
-/home/student1/network-workshop
-[student1@ansible-1 network-workshop]$
+[student@ansible-1 ~]$ cd ~/network-workshop/
+[student@ansible-1 network-workshop]$ pwd
+/home/student/network-workshop
+[student@ansible-1 network-workshop]$
 ```
 
-* `~` - the tilde in this context is a shortcut for the home directory, i.e. `/home/student1`
+* `~` - the tilde in this context is a shortcut for the home directory, i.e. `/home/student`
 * `cd` - Linux command to change directory
 * `pwd` - Linux command for print working directory.  This will show the full path to the current working directory.
 
@@ -110,7 +112,7 @@ $ ansible-navigator images
 >
 > The output  you see might differ from the above output
 
-This command gives you information about all currently installed Execution Environments or EEs for short.  Investigate an EE by pressing the corresponding number.  For example pressing **2** with the above example will open the `ee-supported-rhel8` execution environment:
+This command gives you information about all currently installed Execution Environments or EEs for short.  Investigate an EE by pressing the corresponding number.  For example pressing **0** with the above example will open the `network-ee` execution environment:
 
 ![ee main menu](images/navigator-ee-menu.png)
 
@@ -123,18 +125,20 @@ Selecting `2` for `Ansible version and collections` will show us all Ansible Col
 Either use Visual Studio Code to open or use the `cat` command to view the contents of the `ansible-navigator.yml` file.  The file is located in the home directory:
 
 ```bash
-$ cat ~/.ansible-navigator.yml
+$ cat .ansible-navigator.yml 
 ---
 ansible-navigator:
   ansible:
-    inventories:
-    - /home/student1/lab_inventory/hosts
+    inventory:
+      entries:
+      - /home/student/lab_inventory/hosts
 
   execution-environment:
-    image: registry.redhat.io/ansible-automation-platform-20-early-access/ee-supported-rhel8:2.0.0
+    image: quay.io/acme_corp/network-ee:latest
     enabled: true
     container-engine: podman
-    pull-policy: missing
+    pull:
+      policy: missing
     volume-mounts:
     - src: "/etc/ansible/"
       dest: "/etc/ansible/"
@@ -200,7 +204,7 @@ rtr2
 rtr4
 
 [control]
-ansible ansible_host=13.58.149.157 ansible_user=student1 private_ip=172.16.240.184
+ansible ansible_host=13.58.149.157 ansible_user=student private_ip=172.16.240.184
 ```
 
 ### Step 6 - Understanding inventory
@@ -274,6 +278,10 @@ Warning: Permanently added 'rtr1,35.175.115.246' (RSA) to the list of known host
 rtr1#show ver
 Cisco IOS XE Software, Version 16.09.02
 ```
+
+>**Note**
+>
+> The workshops have just been upgraded to Red Hat Enterprise Linux 9 which is using a newer more secure [system-wide cryptographic policy](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/security_hardening/using-the-system-wide-cryptographic-policies_security-hardening).  If you hit the issue `no mutual signature supported` for a Cisco network device, please run the command `sudo update-crypto-policies --set LEGACY` and exit/restart your terminal so the policy will take effect.  This will be fixed in a future workshop release.  Please open issues on https://github.com/ansible/workshops
 
 ## Complete
 

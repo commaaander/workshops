@@ -1,4 +1,35 @@
 ---
+- name: Filter hosts containing student number
+  ansible.builtin.set_fact:
+    student_hosts: "{{ groups['security'] | select('search', 'student' ~ student_number ~ '-') | list }}"
+
+- name: Debug hosts for 
+  ansible.builtin.debug:
+    msg: "{{ student_hosts }}"
+  
+- name: Add devices into controller inventory
+  awx.awx.host:
+    name: "{{ hostvars[item].short_name }}"
+    enabled: true
+    inventory: "Workshop Inventory"
+    controller_username: admin
+    controller_password: "{{ admin_password }}"
+    controller_host: "https://{{ ansible_host }}"
+    validate_certs: false
+    variables:
+      ansible_host: "{{ hostvars[item].ansible_host }}"
+      private_ip: "{{ hostvars[item].private_ip }}"
+      private_ip2: "{{ hostvars[item].private_ip | default('') }}"
+  loop: "{{ student_hosts }}"
+
+- name: use COP controller_configuration collection
+  include_role:
+    name: '{{ setup_controller }}'
+  loop:
+    - 'infra.controller_configuration.hosts'
+    - 'infra.controller_configuration.groups'
+  loop_control:
+    loop_var: setup_controller
 
 # Teams
 - name: Create analyst team
@@ -9,7 +40,7 @@
     state: present
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
 
 - name: Create IDS team
@@ -20,7 +51,7 @@
     state: present
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
 
 - name: Create Firewall team
@@ -31,7 +62,7 @@
     state: present
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
 
 # Users
@@ -46,7 +77,7 @@
     superuser: false
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
 
 - name: Add user opsids
@@ -60,7 +91,7 @@
     superuser: false
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
 
 - name: Add user opsfirewall
@@ -74,7 +105,7 @@
     superuser: false
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
 
 # Assign users to default org
@@ -86,7 +117,7 @@
     state: present
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
 
 - name: Ensure that user opsids belongs to the Default org
@@ -97,7 +128,7 @@
     state: present
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
 
 - name: Ensure that user opsfirewall belongs to the Default org
@@ -108,7 +139,7 @@
     state: present
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
 
 # Teams assignment
@@ -120,7 +151,7 @@
     state: present
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
 
 - name: Assign opsids to group TeamIDS
@@ -131,7 +162,7 @@
     state: present
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
 
 - name: Assign opsfirewall to group TeamFirewall
@@ -142,7 +173,7 @@
     state: present
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
 
 # Add repository as project
@@ -154,8 +185,12 @@
     scm_url: "https://github.com/ansible-security/workshop-examples"
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
+  register: add_repo
+  until: add_repo is not failed
+  retries: 5
+  delay: 10
 
 - name: Wait for update to finish
   pause:
@@ -174,7 +209,7 @@
     execution_environment: "{{ workshop_type }} workshop execution environment"
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     use_fact_cache: true
     validate_certs: false
 
@@ -192,7 +227,7 @@
     execution_environment: "{{ workshop_type }} workshop execution environment"
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     use_fact_cache: true
     validate_certs: false
 
@@ -208,7 +243,7 @@
     execution_environment: "{{ workshop_type }} workshop execution environment"
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     use_fact_cache: true
     validate_certs: false
 
@@ -224,7 +259,7 @@
     execution_environment: "{{ workshop_type }} workshop execution environment"
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     use_fact_cache: true
     validate_certs: false
 
@@ -240,7 +275,7 @@
     execution_environment: "{{ workshop_type }} workshop execution environment"
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     use_fact_cache: true
     validate_certs: false
 
@@ -260,7 +295,7 @@
     execution_environment: "{{ workshop_type }} workshop execution environment"
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     use_fact_cache: true
     validate_certs: false
 
@@ -278,7 +313,7 @@
     execution_environment: "{{ workshop_type }} workshop execution environment"
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     use_fact_cache: true
     validate_certs: false
 
@@ -296,7 +331,7 @@
     execution_environment: "{{ workshop_type }} workshop execution environment"
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     use_fact_cache: true
     validate_certs: false
 
@@ -312,7 +347,7 @@
     execution_environment: "{{ workshop_type }} workshop execution environment"
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     use_fact_cache: true
     validate_certs: false
 
@@ -328,7 +363,7 @@
     execution_environment: "{{ workshop_type }} workshop execution environment"
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     use_fact_cache: true
     validate_certs: false
 
@@ -341,7 +376,7 @@
     state: present
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
   loop:
     - "Send firewall logs to QRadar"
@@ -356,7 +391,7 @@
     state: present
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
   loop:
     - "Send IDPS logs to QRadar"
@@ -370,7 +405,7 @@
     state: present
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
   loop:
     - "Accept firewall logs in QRadar"
@@ -384,7 +419,7 @@
     state: present
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
   loop:
     - "Roll back all changes"

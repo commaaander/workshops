@@ -19,7 +19,7 @@
 
 Ansible Automation Platform 2 is the next evolution in automation from Red Hat’s trusted enterprise technology experts. The Ansible Automation Platform 2 release includes automation controller 4.0, the improved and renamed Ansible Tower.
 
-Controller continues to provide a standardized way to define, operate, and delegate automation across the enterprise. It introduces new technologies and an enhanced architecture that enables automation teams to scale and deliver automation rapidly. 
+Controller continues to provide a standardized way to define, operate, and delegate automation across the enterprise. It introduces new technologies and an enhanced architecture that enables automation teams to scale and deliver automation rapidly.
 
 ### Why was Ansible Tower renamed to automation controller?
 
@@ -35,6 +35,8 @@ All automation team members interact with or rely on automation controller, eith
 These roles are not necessarily dedicated to a person or team. Many organizations assign multiple roles to people or outsource specific automation tasks based on their needs.
 
 Automation operators are typically the primary individuals who interact directly with the automation controller, based on their responsibilities.
+
+{% include mesh.md %}
 
 ## Objective
 

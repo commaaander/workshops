@@ -1,4 +1,4 @@
-Configuring Automation Controller
+Configuration de Automation Controller
 =========================
 
 **Lisez ceci dans d'autres langues**:
@@ -7,13 +7,13 @@ Configuring Automation Controller
 Automation Controller propose de nombreuses fonctionnalités tel que les organisations, les notifications, l'ordonnancement, etc. Cependant, aujourd'hui nous allons nous concentrer uniquement sur quelques-unes des fonctions clés qui sont nécessaires pour l'atelier.
 
 
-- Les indetifiants
+- Les indentifiants
 
 - Les projets
 
 - Les inventaires 
 
-- Et les modèles.
+- Et les modèles
 
 
 
@@ -40,7 +40,7 @@ Incluant l'accès aux serveurs, réseaux, et de service infonuagique. Dans cet a
 
 Sélectionnez *INFORMATIONS D’IDENTIFICATION* dans le panneau de gauche sous *RESSOURCES*
 
-![Cred](images/1-tower-credentials.png)
+![Cred](images/1-controller-credentials.png)
 
 Étape 2:
 --------
@@ -60,7 +60,7 @@ Remplissez les champs avec les valeurs suivantes:
 | Username     | student#        | **Replace # with your student number**   |
 | Password     | *****           | Replace with your student password       |
 
-![Add Machine Credential](images/1-tower-add-machine-credential.png)
+![Add Machine Credential](images/1-controller-add-machine-credential.png)
 
 Étape 4:
 --------
@@ -84,7 +84,7 @@ L'identifiant precedement créé permet d'accéder à nos machines Windows. Nous
 
 Cliquez sur ![Sauvegarder](images/at_save.png)   
 
-![Add SCM Credential](images/1-tower-add-scm-credential.png)
+![Add SCM Credential](images/1-controller-add-scm-credential.png)
 
 Création d'un projet
 ====================
@@ -95,10 +95,10 @@ Un projet est une collection logique de playbook Ansible. Vous pouvez gérer les
 Étape 1:
 --------
 
-Dans cet environnement, les playbooks sont stockés dans un référentiel git disponible sur l'instance GitLab de l'atelier. Avant qu'un **Projet** puisse être créé dans Automation Controller, l'URL git du référentiel est nécessaire. Pour obtenir l'URL de votre projet, connectez-vous à l'instance GitLab, sélectionnez votre projet d'atelier et copiez l'URL `https` présentée après avoir cliqué sur le bouton *Cloner*.
+Dans cet environnement, les playbooks sont stockés dans un référentiel git disponible sur l'instance GitLab de l'atelier. Avant qu'un **Projet** puisse être créé dans Automation Controller, l'URL git du référentiel est nécessaire. Pour obtenir l'URL de votre projet, connectez-vous à l'instance GitLab, sélectionnez votre projet d'atelier et copiez l'URL `https` présentée après avoir cliqué sur le bouton *Copy*.
 
-![Proj](images/1-gitlab-project.png)
-![Clone](images/1-gitlab-clone.png)
+![Proj](images/1-gitea-project.png)
+![Clone](images/1-gitea-clone.png)
 
 L'URL du dépôt git sera utilisé dans **Étape 3**
 
@@ -107,7 +107,7 @@ L'URL du dépôt git sera utilisé dans **Étape 3**
 
 Cliquez sur **Projets** dans le panneau de gauche.
 
-![Proj](images/1-tower-project.png)
+![Proj](images/1-controller-project.png)
 
 Cliquez sur l'icone ![Plus](images/add.png) pour ajouter un nouveau projet.
 
@@ -116,17 +116,16 @@ Cliquez sur l'icone ![Plus](images/add.png) pour ajouter un nouveau projet.
 
 Remplissez le formulaire en utilisant les entrées suivantes ( **en utilisant votre numéro d'étudiant dans l'URL SCM** )
 
-
-| Clé            | Valeur                                                                  |                                                   |
+| Key            | Value                                                                   |                                                   |
 |----------------|-------------------------------------------------------------------------|---------------------------------------------------|
-| Nom            | Ansible Workshop Project                                                |                                                   |
-| Description    | Workshop playbooks                                                      |                                                   |
-| Organisation   | Default                                                                 |                                                   |
+| Name           | Ansible Workshop Project                                                |                                                   |
+| Description    | Windows Workshop Project                                                      |                                                   |
+| Organization   | Default                                                                 |                                                   |
+| Default Execution Environment    | windows workshop execution environment                                                      |                                                   |
 | SCM Type       | Git                                                                     |                                                   |
-| SCM URL        | https://gitlab.**WORKSHOP**.rhdemo.io/**student#**/workshop_project.git | URL obtained from Step 1                          |
-| SCM BRANCH     |                                                                         | Intentionally blank                               |
+| SCM URL        | https://git.**WORKSHOP**.demoredhat.com/**student#**/workshop_project.git | URL obtenu de l'étape 1                          |
+| SCM BRANCH     |                                                                         | laissez vide                               |
 | SCM CREDENTIAL | Git Credential                                                          |                                                   |
-
 
 Options de mise à jour SCM
 
@@ -136,7 +135,7 @@ Options de mise à jour SCM
 - [ ] Autoriser le remplacement de la branche
 
 
-![Defining a Project](images/1-tower-create-project.png)
+![Defining a Project](images/1-controller-create-project.png)
 
 Étape 4:
 -------
@@ -148,15 +147,14 @@ Cliquez sur ![enregistrer](images/at_save.png)
 
 Faites défiler la page vers le bas et validez que le projet a été correctement synchronisé avec le référentiel de contrôle de source. Vous devriez voir une icône verte à côté du nom du projet dans la liste des projets en bas de page.
 
-![Succesfull Sync](images/1-tower-project-success.png)
+![Succesfull Sync](images/1-controller-project-success.png)
 
 Inventaire
 ==========
 
-Un inventaire est un ensemble d'hôtes sur lesquels des taches peuvent être lancés. Les inventaires sont divisés en groupes et ces groupes contiennent des serveurs. Les inventaires peuvent être sourcés manuellement, en entrant les noms d'hôte dans Controller ou auprès de l'un des fournisseurs de cloud pris en charge par Automation Controller.
+Un inventaire est un ensemble d'hôtes sur lesquels des tâches peuvent être lancés. Les inventaires sont divisés en groupes et ces groupes contiennent des hôtes. Les inventaires peuvent être entrer manuellement, en entrant des noms d'hôte dans Controller, ou obtenu automaiquement à partir de l'un des fournisseurs de cloud pris en charge par Automation Controller ou grace a des plug-ins d'inventaire disponible dans les collections Ansible sur Automation Hub. 
 
-Un inventaire statique a déjà été créé pour vous aujourd'hui. Nous allons maintenant jeter un œil à cet inventaire pour vous montrer les différentes fonctionnalités.
-
+Un inventaire statique a déjà été créé pour vous. Nous allons maintenant jeter un œil à cet inventaire pour vous montrer les différentes fonctionnalités.
 
 Étape 1:
 --------
@@ -170,9 +168,9 @@ Cliquez sur **Inventaires** dans le panneau de gauche. Vous verrez l'inventaire 
 
 Vous allez maintenant voir l'inventaire. De là, vous pouvez ajouter des hôtes, des groupes ou même ajouter des variables spécifiques à cet inventaire.
 
-![Edit Inventory](images/1-tower-edit-inventory.png)
+![Edit Inventory](images/1-controller-edit-inventory.png)
 
-Nous allons voir les hôtes, cliquez sur le bouton **HÔTES**.
+Nous allons voir les hôtes incluant dans cet inventaire, cliquez sur le bouton **HÔTES**.
 
 Étape 3:
 --------
@@ -180,16 +178,16 @@ Nous allons voir les hôtes, cliquez sur le bouton **HÔTES**.
 Dans la vue Hôtes, nous pouvons voir tous les hôtes associés à cet inventaire. Vous verrez également à quels groupes un hôte est associé. Les hôtes peuvent être associés à plusieurs groupes. Ces groupes peuvent ensuite être utilisés pour se limiter aux hôtes exacts sur lesquels nous exécuterons plus tard nos playbooks.
 
 
-![Hosts View](images/1-tower-hosts-view.png)
+![Hosts View](images/1-controller-hosts-view.png)
 
 Étape 4:
 -------
 
 Si vous cliquez sur le bouton **GROUPES**, puis sélectionnez le groupe **Windows**, vous pouvez voir les variables définies au niveau du groupe qui s'appliqueront à tous les hôtes de ce groupe.
 
-![Group Edit](images/1-tower-group-edit.png)
+![Group Edit](images/1-controller-group-edit.png)
 
-Aujourd'hui, nous avons déjà défini une poignée de variables pour indiquer à Ansible comment se connecter aux hôtes de ce groupe. Vous n'avez pas besoin de définir ces variables en tant que variables de groupe ici, elles peuvent également être des variables hôtes ou résider directement dans votre modèle ou votre playbook. Cependant, comme ces variables seront les mêmes pour **TOUS** les hôtes Windows de notre environnement, nous les avons définies pour l'ensemble du groupe Windows.
+Nous avons déjà défini une poignée de variables pour indiquer à Ansible comment se connecter aux hôtes de ce groupe. Vous n'avez pas besoin de définir ces variables en tant que variables de groupe ici, elles peuvent également être définies sur les hôtes spécifiques ou résider directement dans votre template ou votre playbook. Cependant, comme ces variables seront les mêmes pour **TOUS** les hôtes Windows de notre environnement, nous les avons définies pour l'ensemble du groupe Windows.
 
 Par défaut, Ansible tentera d'utiliser SSH pour se connecter à n'importe quel hôte, donc pour Windows, nous devons lui dire d'utiliser une méthode de connexion différente, dans ce cas, [WinRM](https://docs.ansible.com/ansible/latest/user_guide/windows_winrm.html).
 
@@ -209,7 +207,7 @@ Windows propose diverses méthodes d'authentification que nous pouvons utiliser 
 
 Si vous cliquez sur le bouton **HÔTES**, vous pouvez afficher les hôtes appartenant au groupe Windows. Si vous cliquez sur le lien de l'hôte sur cette page, vous pouvez afficher les variables spécifiques à l'hôte qui ont été définies.
 
-![Host Edit](images/1-tower-host-edit.png)
+![Host Edit](images/1-controller-host-edit.png)
 
 **`ansible_host`**
 

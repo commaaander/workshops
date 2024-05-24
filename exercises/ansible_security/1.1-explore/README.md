@@ -1,9 +1,21 @@
-# Exercise 1.1 - Exploring the lab environment
+# 1.1 Exploring the lab environment
 
-**Read this in other languages**: <br>
-[![uk](../../../images/uk.png) English](README.md),  [![japan](../../../images/japan.png) 日本語](README.ja.md), [![france](../../../images/fr.png) Français](README.fr.md).<br>
+<!-- **Read this in other languages**: <br>
+[![uk](../../../images/uk.png) English](README.md),  [![japan](../../../images/japan.png) 日本語](README.ja.md), [![france](../../../images/fr.png) Français](README.fr.md).<br> -->
 
-## Step 1.1 - Objective
+- [1.1 Exploring the lab environment](#11-exploring-the-lab-environment)
+  - [1.1.1 Objective](#111-objective)
+  - [1.1.2 Ansible Automation Platform command line utilities](#112-ansible-automation-platform-command-line-utilities)
+  - [1.1.3 Architecture of the lab, Nodes and Services](#113-architecture-of-the-lab-nodes-and-services)
+  - [1.1.4 Access the Ansible Environment](#114-access-the-ansible-environment)
+  - [1.1.5 Open and use the Terminal in VS Code](#115-open-and-use-the-terminal-in-vs-code)
+  - [1.1.6 Examining automation execution environments](#116-examining-automation-execution-environments)
+  - [1.1.7 Examine the ansible-navigator configuration](#117-examine-the-ansible-navigator-configuration)
+  - [1.1.8 Your inventory](#118-your-inventory)
+  - [1.1.9 Working the Labs](#119-working-the-labs)
+<br>
+
+## 1.1.1 Objective
 
 The objective of this lab is to provide you a deeper understanding and hands on experience how to automate security tools used by security operators. For that we will tackle three security use cases rather typical for the day-to-day challenges of security operators. While all of them will interact with roughly the same tool set, each use case shows a different perspective (security analyst, firewall operator, IDS specialist) and thus a different point of view on the available tools.
 
@@ -33,11 +45,11 @@ We have set up automation controller and a common set of security related tools:
 - Intrusion detection and prevention systems (IDPS) are focused on identifying possible incidents, logging information about them, attempting to stop them, and reporting them to security administrators.
 - Our workshop will provide you a [Snort](https://www.snort.org) instance for the exercises.
 
-The exercises of the first section of this lab guide you through each individual solution mentioned above. You will learn how to access them, what they are used for and how to interact with them using Ansible. 
+The exercises of the first section of this lab guide you through each individual solution mentioned above. You will learn how to access them, what they are used for and how to interact with them using Ansible.
 
 The first exercises will also introduce the Ansible Automation Platform features and command line utilities. Let's have a closer look at them.
 
-### Ansible Automation Platform command line utilities
+## 1.1.2 Ansible Automation Platform command line utilities
 
 - [ansible-navigator](https://github.com/ansible/ansible-navigator) - a command line utility and text-based user interface (TUI) for running and developing Ansible automation content.
 - [ansible-core](https://docs.ansible.com/core.html) - the base executable that provides the framework, language and functions that underpin the Ansible Automation Platform.  It also includes various cli tools like `ansible`, `ansible-playbook` and `ansible-doc`.  Ansible Core acts as the bridge between the upstream community with the free and open source Ansible and connects it to the downstream enterprise automation offering from Red Hat, the Ansible Automation Platform.
@@ -46,10 +58,9 @@ The first exercises will also introduce the Ansible Automation Platform features
 
 If you need more information on new Ansible Automation Platform components bookmark this landing page [https://red.ht/AAP-20](https://red.ht/AAP-20)
 
-
 The exercises of the second section of this lab are focused on the actual security operations use cases: situations in which a certain challenge has to be met, usually by interacting not only with one of the mentioned solutions above, but with a mix of them. After setting forth the challenge and explaining what tasks need to be done manually to solve the situation, the lab walks through the steps to automate the tasks with Ansible.
 
-## Step 1.2 - Architecture of the lab, Nodes and Services
+## 1.1.3 Architecture of the lab, Nodes and Services
 
 In this lab you work in a pre-configured lab environment. You will have access to the following hosts and services:
 
@@ -64,7 +75,7 @@ The lab is set up individually for you. You have your own environment, own servi
 
 For the exercises of section 2 we need to have security incidents. Those should happen on a **target** machine - that is Snort server. It is basically a RHEL installation with Snort installed and running a simplified web server to run attacks against.
 
-## Step 1.3 - Access the Ansible Environment
+## 1.1.4 Access the Ansible Environment
 
 All automation is done from the Ansible control host, a Red Hat Enterprise Linux machine. To make access to the control host and managing files on it easier there is an online version of VS Code editor installed directly on the control host. This way it can be accessed via a normal web browser. Commands can be executed right from the terminal within the VS Code editor.
 
@@ -94,9 +105,9 @@ At this point, you will see a **Welcome** page:
 
 From within this environment, you can create and modify files or open a terminal and execute commands.
 
-## Step 1.4 - Open and use the Terminal in VS Code
+## 1.1.5 Open and use the Terminal in VS Code
 
-So let's open a new terminal in VS Code. In the menu bar, click on **Terminal** > **New Terminal**. 
+So let's open a new terminal in VS Code. In the menu bar, click on **Terminal** > **New Terminal**.
 
 ![VS Code - New Terminal](images/1-vscode-new-terminal.png#centreme)
 
@@ -110,12 +121,12 @@ A new terminal will be opened in the lower part of your editor and you will be a
 
 Note that each student is assigned a student number, i.e. X and you should work as the student <X> user on the control node if not explicitly told differently.
 
-## Step 1.5 - Examining automation execution environments
+## 1.1.6 Examining automation execution environments
 
 Next, proceed to check that Ansible Automation Platform has been configured correctly.
 
 ```bash
-    [student<X>@ansible-1 ~]$ ansible-navigator images 
+    [student@ansible-1 ~]$ ansible-navigator images
 ```
 
 The result should resemble the following:   
@@ -136,10 +147,10 @@ To return to the previous screen in `ansible-navigator`, press the `Esc` button.
 
 
 > **Note**
-> 
+>
 > Please refer to the [execution environment documentation](https://docs.ansible.com/automation-controller/latest/html/userguide/execution_environments.html) for more information.   
 
-## Step 1.6 - Examine the ansible-navigator configuration
+## 1.1.7 Examine the ansible-navigator configuration
 
 Either use Visual Studio Code to open or use the `cat` command to view the contents of the `ansible-navigator.yml` file.  The file is located in the home directory:
 
@@ -149,7 +160,7 @@ $ cat ~/.ansible-navigator.yml
 ansible-navigator:
   ansible:
     inventories:
-    - /home/student1/lab_inventory/hosts
+    - /home/student/lab_inventory/hosts
 
   execution-environment:
     image: quay.io/acme_corp/security_ee:latest
@@ -167,10 +178,10 @@ Note the following parameters within the `ansible-navigator.yml` file:
 * `execution-environment`: where the default execution environment is set
 
 > **Note**
-> 
+>
 > For a full listing of configurations, please visit the `ansible-navigator` [documentation](https://ansible-navigator.readthedocs.io/en/latest/settings/).   
 
-## Step 1.7 - Your inventory
+## 1.1.8 Your inventory
 
 Let's open a file in VS Code. In the menu bar, click on **File**, **Open File**. In the middle of the screen, a drop down menu opens with the available file content of the home directory of your user:
 
@@ -182,7 +193,7 @@ As you see, the inventory of your environment is provided in a static, ini-type 
 
 ```ini
 [all:vars]
-ansible_user=student1
+ansible_user=student
 ansible_ssh_pass=ansible
 ansible_port=22
 
@@ -210,16 +221,16 @@ All the IP addresses are specific to your environment. Whenever the exercises as
 Ansible is already configured to use the inventory specific to your environment. As shown in the example above, the inventory carries more than just the host names and IP addresses. Especially in the case of the Windows workstation, several more parameters are set.
 
 > **Note**
-> 
+>
 > Not all hosts in your lab can be reached via SSH or WinRM. Some are accessed via REST API, RDP or web browser. During the exercises, each node type will be explained in detail and how to access the resources will be shown step by step.
 
-## Step 1.8 - Working the Labs
+## 1.1.9 Working the Labs
 
 You might have guessed by now this lab uses the command line frequently…​ So we recommend that you don’t type everything manually, use copy & paste from the browser when appropriate. But stop to think and understand.
 
 ----
 **Navigation**
 <br><br>
-[Next Exercise](../1.2-checkpoint/README.md) 
+[Next Exercise](../1.2-checkpoint/README.md)
 <br><br>
 [Click here to return to the Ansible for Red Hat Enterprise Linux Workshop](../README.md)

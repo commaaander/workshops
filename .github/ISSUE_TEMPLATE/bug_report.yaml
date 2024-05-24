@@ -1,6 +1,7 @@
 ---
 name: 🐛 Bug report
 description: Fill out this issue form to help us solve your problem
+title: "Bug report for Ansible Workshops"
 body:
   - type: markdown
     attributes:
@@ -25,6 +26,7 @@ body:
         What kind of issue do you want to open?
       options:
         - Bug
+        - Documentation
         - Feature Request
         - Security Issue
   - type: textarea

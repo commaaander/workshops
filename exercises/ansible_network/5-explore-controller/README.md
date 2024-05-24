@@ -1,6 +1,6 @@
 # Exercise 5: Explore Automation controller
 
-**Read this in other languages**: ![uk](https://github.com/ansible/workshops/raw/devel/images/uk.png) [English](README.md),  ![japan](https://github.com/ansible/workshops/raw/devel/images/japan.png) [日本語](README.ja.md).
+**Read this in other languages**: ![uk](https://github.com/ansible/workshops/raw/devel/images/uk.png) [English](README.md),  ![japan](https://github.com/ansible/workshops/raw/devel/images/japan.png) [日本語](README.ja.md), ![Español](https://github.com/ansible/workshops/raw/devel/images/es.png) [Español](README.es.md).
 
 ## Table of Contents
 
@@ -135,6 +135,8 @@ Credentials are utilized by Automation controller for authentication when launch
 * The **USERNAME** is set to `ec2-user`.
 * The **PASSWORD** is blank.
 * The **SSH PRIVATE KEY** is already configured, and is **ENCRYPTED**.
+  
+{% include mesh.md %}
 
 ## Takeaways
 

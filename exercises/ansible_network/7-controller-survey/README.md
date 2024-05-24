@@ -1,18 +1,20 @@
 # Exercise 7: Creating a Survey
 
-**Read this in other languages**: ![uk](https://github.com/ansible/workshops/raw/devel/images/uk.png) [English](README.md),  ![japan](https://github.com/ansible/workshops/raw/devel/images/japan.png) [日本語](README.ja.md).
+**Read this in other languages**: ![uk](https://github.com/ansible/workshops/raw/devel/images/uk.png) [English](README.md), ![japan](https://github.com/ansible/workshops/raw/devel/images/japan.png) [日本語](README.ja.md), ![Español](https://github.com/ansible/workshops/raw/devel/images/es.png) [Español](README.es.md).
 
 ## Table of Contents
 
-* [Objective](#objective)
-* [Guide](#guide)
-   * [Step 1: Create a Job Template](#step-1-create-a-job-template)
-   * [Step 2: Examine the playbook](#step-2-examine-the-playbook)
-   * [Step 3: Create a survey](#step-3-create-a-survey)
-   * [Step 4: Launch the Job Template](#step-4-launch-the-job-template)
-   * [Step 5: Verify the banner](#step-5-verify-the-banner)
-*  [Takeaways](#takeaways)
-*  [Complete](#complete)
+- [Exercise 7: Creating a Survey](#exercise-7-creating-a-survey)
+  - [Table of Contents](#table-of-contents)
+  - [Objective](#objective)
+  - [Guide](#guide)
+    - [Step 1: Create a Job Template](#step-1-create-a-job-template)
+    - [Step 2: Examine the playbook](#step-2-examine-the-playbook)
+    - [Step 3: Create a survey](#step-3-create-a-survey)
+    - [Step 4: Launch the Job Template](#step-4-launch-the-job-template)
+    - [Step 5: Verify the banner](#step-5-verify-the-banner)
+  - [Takeaways](#takeaways)
+  - [Complete](#complete)
 
 ## Objective
 
@@ -34,7 +36,7 @@ Demonstrate the use of Automation controller [survey feature](https://docs.ansib
    |  Job Type |  Run |
    |  Inventory |  Workshop Inventory |
    |  Project |  Workshop Project |
-   | Execution Environment | Default execution environment |
+   |  Execution Environment | network workshop execution environment |
    |  Playbook |  `playbooks/network_banner.yml` |
    |  Credential |  Workshop Credential |
 
@@ -57,7 +59,8 @@ Here is what the  `network_banner.yml` Ansible Playbook looks like:
       vars:
         - network_banner:  "{{ net_banner | default(None) }}"
         - banner_type: "{{ net_type | default('login') }}"
-      name: "../roles/banner"
+      include_role:
+        name: "../roles/banner"
 ```
 
 <!-- {% endraw %} -->
@@ -129,11 +132,13 @@ In this step you will create a *"survey"* of user input form to collect input fr
 
    ![workshop survey](images/controller_survey_q_one.png)
 
-4. Click the green `Add` button to create another question
+4. Click `Save`
+
+5. Click the blue `Add` button back in the **Survey** tab to create another question
 
    ![add survey button](images/controller_add_survey.png)
 
-5. Next we will create a survey prompt to gather the `banner_type`. This will either be "motd" or "login" and will default to "login" per the playbook above.
+6. Next we will create a survey prompt to gather the `banner_type`. This will either be "motd" or "login" and will default to "login" per the playbook above.
 
    | Parameter               | Value                          |
    |-------------------------|--------------------------------|
@@ -149,13 +154,13 @@ In this step you will create a *"survey"* of user input form to collect input fr
 
    ![workshop survey](images/controller_survey_q_two.png)
 
-5. Click Save
+7. Click `Save`
 
-6. Click the toggle switch to activate the survey and turn it On
+8. Ensure the toggle switch is set to `Survey Enabled`
 
    ![workshop survey toggle](images/controller_survey_toggle.png)
 
-7. Click **Back to Templates**
+9. Click **Back to Templates**
 
 ### Step 4: Launch the Job Template
 
@@ -184,17 +189,17 @@ Let the job run to completion.  Let the instructor know if anything fails.
 1. Login to one of the routers and see the banner setup
 
    ```sh
-   [student1@ansible]$ ssh rtr1
+   [student@ansible]$ ssh rtr1
    ```
 
    The banner will appear on login.  Here is an example from above:
 
-   ```
-   [student1@ansible-1 ~]$ ssh rtr1
-  Warning: Permanently added 'rtr1,3.237.253.154' (RSA) to the list of known hosts.
+   ```bash
+   [student@ansible-1 ~]$ ssh rtr1
+   Warning: Permanently added 'rtr1,3.237.253.154' (RSA) to the list of known hosts.
 
-  This router was configured by Ansible
-  ```
+   This router was configured by Ansible
+   ```
 
 2. Verify on additional routers
 
@@ -211,6 +216,6 @@ You have successfully demonstrated
 You have completed lab exercise 7
 
 ---
-[Previous Exercise](../6--controller-job-template/README.md) | [Next Exercise](../8-controller-rbac/README.md)
+[Previous Exercise](../6-controller-job-template/README.md) | [Next Exercise](../8-controller-rbac/README.md)
 
 [Click here to return to the Ansible Network Automation Workshop](../README.md)

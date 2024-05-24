@@ -8,6 +8,7 @@
 * [Objective](#objective)
 * [Guide](#guide)
 * [The Apache-configuration Role](#the-apache-configuration-role)
+* [Create the Project](#create-the-project)
 * [Create a Template with a Survey](#create-a-template-with-a-survey)
   * [Create Template](#create-template)
   * [Add the Survey](#add-the-survey)
@@ -49,6 +50,57 @@ The role deploys a static configuration for Apache. This is to make sure that al
 
 Because the playbook and role is located in the same Github repo as the `apache_install.yml` playbook you don't have to configure a new project for this exercise.
 
+### Create the Project
+
+* Go to **Resources → Projects** click the **Add** button. Fill in the form:
+
+ <table>
+   <tr>
+     <th>Parameter</th>
+     <th>Value</th>
+   </tr>
+   <tr>
+     <td>Name</td>
+     <td>Workshop Project</td>
+   </tr>
+   <tr>
+     <td>Organization</td>
+     <td>Default</td>
+   </tr>
+   <tr>
+     <td>Default Execution Environment</td>
+     <td>Default execution environment</td>
+   </tr>
+   <tr>
+     <td>Source Control Credential Type</td>
+     <td>Git</td>
+   </tr>
+ </table>
+
+ Enter the URL into the Project configuration:
+
+ <table>
+   <tr>
+     <th>Parameter</th>
+     <th>Value</th>
+   </tr>
+   <tr>
+     <td>Source Control URL</td>
+     <td><code>https://github.com/ansible/workshop-examples.git</code></td>
+   </tr>
+   <tr>
+     <td>Options</td>
+     <td>Select Clean, Delete, Update Revision on Launch to request a fresh copy of the repository and to update the repository when launching a job.</td>
+   </tr>
+ </table>
+
+* Click **SAVE**
+
+
+The new project will be synced automatically after creation. But you can also do this manually: Sync the Project again with the Git repository by going to the **Projects** view and clicking the circular arrow **Sync Project** icon to the right of the Project.
+
+After starting the sync job, go to the **Jobs** view: there is a new job for the update of the Git repository.
+
 ### Create a Template with a Survey
 
 Now you create a new Template that includes a survey.
@@ -81,7 +133,7 @@ Now you create a new Template that includes a survey.
     <td>Workshop Project</td>
   </tr>
   <tr>
-    <td>Eecution Environment</td>
+    <td>Execution Environment</td>
     <td>Default execution environment</td>
   </tr>
   <tr>
@@ -158,9 +210,7 @@ In the same fashion add a second **Survey Question**
 </table>
 
 * Click **Save**
-* Click the toggle to turn the Survey questions to **On**
-
-* Click **Preview** for the Survey
+* Click the **Survey Enabled** toggle button to turn on the Survey questions
 
 ### Launch the Template
 

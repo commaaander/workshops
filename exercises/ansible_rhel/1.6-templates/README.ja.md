@@ -1,136 +1,122 @@
 # ワークショップ演習 - テンプレート
 
-**その他の言語はこちらをお読みください。**
-<br>![uk](../../../images/uk.png) [English](README.md),  ![japan](../../../images/japan.png)[日本語](README.ja.md), ![brazil](../../../images/brazil.png) [Portugues do Brasil](README.pt-br.md), ![france](../../../images/fr.png) [Française](README.fr.md),![Español](../../../images/col.png) [Español](README.es.md).
+**他の言語で読む**:
+<br>![uk](../../../images/uk.png) [英語](README.md), ![japan](../../../images/japan.png) [日本語](README.ja.md), ![brazil](../../../images/brazil.png) [ブラジルポルトガル語](README.pt-br.md), ![france](../../../images/fr.png) [フランス語](README.fr.md), ![Español](../../../images/col.png) [スペイン語](README.es.md).
 
 ## 目次
 
-* [目的](#objective)
-* [ガイド](#guide)
-* [Step 1 - Playbooks でのテンプレートの使用](#step-1---using-templates-in-playbooks)
-* [Step 2 - チャレンジラボ](#step-2---challenge-lab)
+- [目的](#目的)
+- [ガイド](#ガイド)
+  - [ステップ 1 - Jinja2 テンプレーティングへの導入](#ステップ-1---jinja2-テンプレーティングへの導入)
+  - [ステップ 2 - はじめてのテンプレートを作成する](#ステップ-2---はじめてのテンプレートを作成する)
+  - [ステップ 3 - プレイブックでテンプレートを展開する](#ステップ-3---プレイブックでテンプレートを展開する)
+  - [ステップ 4 - プレイブックを実行する](#ステップ-4---プレイブックを実行する)
 
 ## 目的
 
-この演習では、Jinja2 テンプレートについて説明します。Ansible は Jinja2
-テンプレートを使用して、ファイルが管理対象ホストに配布される前にファイルを変更します。Jinja2は、Python
-で最も使用されているテンプレートエンジンの1つです (<http://jinja.pocoo.org/>)。
+演習 1.5 では、Ansible 内での Jinja2 テンプレーティングが紹介されます。これは、テンプレートから動的なファイルを生成するための強力な機能です。ホスト固有のデータを組み込んだテンプレートを作成する方法を学び、管理されている各ホストに合わせた設定ファイルを作成できるようになります。
 
 ## ガイド
 
-### Step 1 - Playbook でのテンプレートの使用
+### ステップ 1 - Jinja2 テンプレーティングへの導入
 
-ファイルのテンプレートが作成されると、`template`
-モジュールを使用して管理対象ホストに展開できます。これは、制御ノードから管理対象ホストへのローカルファイルの転送に対応しています。
+Ansible は Jinja2 を活用しています。Jinja2 は Python 用の広く使用されているテンプレート言語で、ファイル内で動的なコンテンツの生成を可能にします。この機能は、ホストごとに異なる必要がある設定ファイルを構成する場合に特に便利です。
 
-テンプレートの使用例として、ホスト固有のデータを含むように motd ファイルを変更します。
+### ステップ 2 - はじめてのテンプレートを作成する
 
-最初に、テンプレートリソースを保持するディレクトリー `templates` を `~/ansible-files/` に作成します。
+テンプレートは `.j2` 拡張子で終わり、静的なコンテンツと `{{ }}` で囲まれた動的なプレースホルダーを混在させます。
+
+次の例では、動的なホスト情報を含む「本日のメッセージ」(MOTD) のテンプレートを作成しましょう。
+
+#### テンプレートディレクトリの設定:
+
+テンプレートを整理するために、lab_inventory ディレクトリ内にテンプレートディレクトリが存在することを確認してください。
 
 ```bash
-[student<X>@ansible-1 ansible-files]$ mkdir templates
+mkdir -p ~/lab_inventory/templates
 ```
 
-その後、`~/ansible-files/templates/` ディレクトリーに、テンプレートファイル `motd-facts.j2` を作成します。
+#### MOTD テンプレートの開発:
 
-<!-- {% raw %} -->
+テンプレートディレクトリに `motd.j2` という名前のファイルを作成し、以下の内容を含めます:
 
-```html+jinja
-Welcome to {{ ansible_hostname }}.
-{{ ansible_distribution }} {{ ansible_distribution_version}}
-deployed on {{ ansible_architecture }} architecture.
+```jinja
+{{ ansible_hostname }} へようこそ。
+OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
+アーキテクチャ: {{ ansible_architecture }}
 ```
 
-<!-- {% endraw %} -->
+このテンプレートは、管理されている各ホストのホスト名、OS の配布、バージョン、およびアーキテクチャを動的に表示します。
 
-このテンプレートファイルには、後でコピーされる基本的なテキストが含まれています。また、ターゲットマシンで個別に置き換えられる変数も含まれています。
+### ステップ 3 - プレイブックでテンプレートを展開する
 
-次に、このテンプレートを使用するための Playbook が必要です。`~/ansible-files/` ディレクトリーで、Playbook
-`motd-facts.yml` を作成します。
+プレイブック内で `ansible.builtin.template` モジュールを使用して、管理されているホストにテンプレートを配布し、レンダリングします。
+
+以下の内容で `system_setup.yml` プレイブックを変更します:
 
 ```yaml
 ---
-- name: Fill motd file with host data
-  hosts: node1
+- name: 基本的なシステムセットアップ
+  hosts: all
   become: true
   tasks:
-    - template:
-        src: motd-facts.j2
+    - name: Jinja2 テンプレートから MOTD を更新
+      ansible.builtin.template:
+        src: templates/motd.j2
         dest: /etc/motd
-        owner: root
-        group: root
-        mode: 0644
+
+  handlers:
+    - name: ファイアウォールの再読み込み
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded
 ```
 
-この操作はこれまで数回行ってきました。
+`ansible.builtin.template` モジュールは `motd.j2` テンプレートを取り、各ホストに `/etc/motd` ファイルを生成し、テンプレートのプレースホルダーを実際のホストの事実で埋めます。
 
-* Playbook の内容を把握します。
-* Playbook `motd-facts.yml` を実行します。
-* SSH 経由で node1 にログインし、その日の内容のメッセージを確認します。
-* node1 からログアウトします。
+### ステップ 4 - プレイブックを実行する
 
-Ansible がシステムから検出したファクトに変数置き換える方法を確認してください。
-
-### Step 2 - チャレンジラボ
-
-テンプレートに行を追加して、管理対象ノードの現在のカーネルを一覧表示します。
-
-* 「Ansible ファクト」の章で学習したコマンドを使用して、カーネルバージョンを含むファクトを見つけます。
-
-> **ヒント**
->
-> カーネルについて `grep -i` を実行します
-
-* テンプレートを変更して、見つけたファクトを使用します。
-
-* 再び Playbook を実行します。
-
-* node1 にログインして motd を確認します
-
-> **警告**
->
-> **回答を以下に示します。**
-
-* ファクトを見つけます。
+管理されているすべてのホストにカスタム MOTD を適用するために、プレイブックを実行します:
 
 ```bash
-[student<X>@ansible-1 ansible-files]$ ansible node1 -m setup|grep -i kernel
-       "ansible_kernel": "3.10.0-693.el7.x86_64",
+[student@ansible-1 lab_inventory]$ ansible-navigator run system_setup.yml -m stdout
 ```
 
-* テンプレート `motd-facts.j2` 変更します。
+```plaintext
+PLAY [基本的なシステムセットアップ] *********************************************
+.
+.
+.
 
-<!-- {% raw %} -->
+TASK [Jinja2 テンプレートから MOTD を更新] **************************************
+changed: [node1]
+changed: [node2]
+changed: [node3]
+changed: [ansible-1]
 
-```html+jinja
-Welcome to {{ ansible_hostname }}.
-{{ ansible_distribution }} {{ ansible_distribution_version}}
-deployed on {{ ansible_architecture }} architecture
-running kernel {{ ansible_kernel }}.
+RECAP ************************************************************************
+ansible-1                  : ok=6    changed=1    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0
+node1                      : ok=8    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+node2                      : ok=8    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+node3                      : ok=8    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-<!-- {% endraw %} -->
+ ノードにSSHで接続して変更を確認し、その日のメッセージが表示されるはずです：
 
-* Playbook を実行します。
+```plaintext
+[rhel@control ~]$ ssh node1
 
-```bash
-[student<X>@ansible-1 ~]$ ansible-playbook motd-facts.yml
+node1 へようこそ。
+OS: RedHat 8.7
+アーキテクチャ: x86_64
+このシステムを Red Hat Insights に登録する：insights-client --register
+アカウントを作成するか、https://red.ht/insights-dashboard で全てのシステムを表示する
+最終ログイン：2024年1月29日 月曜日 16:30:31 から 10.5.1.29
 ```
 
-* `node1` への SSH ログインを介して新しいメッセージを確認します。
-
-```bash
-[student<X>@ansible-1 ~]$ ssh node1
-Welcome to node1.
-RedHat 8.1
-deployed on x86_64 architecture
-running kernel 4.18.0-147.8.1.el8_1.x86_64.
-```
 
 ---
 **ナビゲーション**
 <br>
-[前の演習](../1.5-handlers) - [次の演習](../1.7-role)
+[前の演習](../1.5-handlers/README.ja.md) - [次の演習](../1.7-role/README.ja.md)
 
-[こちらをクリックして Ansible for Red Hat Enterprise Linux Workshop
-に戻ります](../README.md#section-1---ansible-engine-exercises)

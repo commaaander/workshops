@@ -98,18 +98,18 @@ Add a new task called **install IIS**. After writing the playbook, click
 ```yaml
   tasks:
     - name: Install IIS
-      win_feature:
+      ansible.windows.win_feature:
         name: Web-Server
         state: present
 
     - name: Create site directory structure
-      win_file:
+      ansible.windows.win_file:
         path: "{{ item.path }}"
         state: directory
       with_items: "{{ iis_sites }}"
 
     - name: Create IIS site
-      win_iis_website:
+      community.windows.win_iis_website:
         name: "{{ item.name }}"
         state: started
         port: "{{ item.port }}"
@@ -122,28 +122,20 @@ Add a new task called **install IIS**. After writing the playbook, click
 
 ![site.yml part 1](images/5-vscode-iis-yaml.png)
 
-> **Note**
->
 > **What is happening here!?**
->
 > - `vars:` You’ve told Ansible the next thing it sees will be a
 >   variable name
->
 > - `iis_sites` You are defining a list-type variable called
 >   iis\_sites. What follows is a list of each site with it’s related
 >   variables
->
 > - `win_file:` This module is used to create, modify, delete files,
 >   directories, and symlinks.
->
 > - `{{ item }}` You are telling Ansible that this will expand into a
 >   list item. Each item has several variables like `name`, `port`,
 >   and `path`.
->
 > - `with_items: "{{ iis_sites }}` This is your loop which is
 >   instructing Ansible to perform this task on every `item` in
 >   `iis_sites`
->
 > - `notify: restart iis service` This statement is a `handler`, so
 >   we’ll come back to it in Section 3.
 
@@ -196,9 +188,9 @@ not escape the forward slash.
 
 ```yaml
     - name: Open port for site on the firewall
-      win_firewall_rule:
+      community.windows.win_firewall_rule:
         name: "iisport{{ item.port }}"
-        enable: yes
+        enable: true
         state: present
         localport: "{{ item.port }}"
         action: Allow
@@ -207,13 +199,13 @@ not escape the forward slash.
       with_items: "{{ iis_sites }}"
 
     - name: Template simple web site to iis_site_path as index.html
-      win_template:
+      ansible.windows.win_template:
         src: 'index.html.j2'
         dest: '{{ item.path }}\index.html'
       with_items: "{{ iis_sites }}"
 
     - name: Show website addresses
-      debug:
+      ansible.builtin.debug:
         msg: "{{ item }}"
       loop:
         - http://{{ ansible_host }}:8080
@@ -222,22 +214,16 @@ not escape the forward slash.
 
 <!-- {% endraw %} -->
 
-> **Note**
->
-> **So… what did I just write?**
->
-> - `win_firewall_rule:` This module is used to create, modify, and
->   update firewall rules. Note in the case of AWS there are also
->   security group rules which may impact communication. We’ve opened
->   these for the ports in this example.
->
-> - `win_template:` This module specifies that a jinja2 template is
->   being used and deployed.
->
-> - used in Ansible to transform data inside a template expression,
->   i.e. filters.
->
-> - `debug:` Again, like in the `iis_basic` playbook, this task displays the URLs to access the sites we are creating for this exercise
+   > **Note**
+   >
+   > **So… what did I just write?**
+   > - `win_firewall_rule:` This module is used to create, modify, and update firewall rules. Note in the case of AWS there are also security group rules which may impact communication. We’ve opened
+   >   these for the ports in this example.
+   > - `win_template:` This module specifies that a jinja2 template is
+   >   being used and deployed.
+   > - `with_items:` used in Ansible to transform data inside a template expression,
+   >   i.e. filters.
+   > - `debug:` Again, like in the `iis_basic` playbook, this task displays the URLs to access the sites we are creating for this exercise
 
 Section 3: Defining and Using Handlers
 ======================================
@@ -259,22 +245,18 @@ Define a handler.
 ```yaml
   handlers:
     - name: restart iis service
-      win_service:
+      ansible.windows.win_service:
         name: W3Svc
         state: restarted
         start_mode: auto
 ```
 
-> **Note**
->
 > **You can’t have a former if you don’t mention the latter**
->
 > - `handler:` This is telling the **play** that the `tasks:` are
 >   over, and now we are defining `handlers:`. Everything below that
 >   looks the same as any other task, i.e. you give it a name, a
 >   module, and the options for that module. This is the definition of
 >   a handler.
->
 > - `notify: restart iis service` …and here is your latter. Finally!
 >   The `notify` statement is the invocation of a handler by name.
 >   Quite the reveal, we know. You already noticed that you’ve added a
@@ -325,18 +307,18 @@ intended. If not, now is the time for us to fix it up. The playbook below should
 
   tasks:
     - name: Install IIS
-      win_feature:
+      ansible.windows.win_feature:
         name: Web-Server
         state: present
 
     - name: Create site directory structure
-      win_file:
+      ansible.windows.win_file:
         path: "{{ item.path }}"
         state: directory
       with_items: "{{ iis_sites }}"
 
     - name: Create IIS site
-      win_iis_website:
+      community.windows.win_iis_website:
         name: "{{ item.name }}"
         state: started
         port: "{{ item.port }}"
@@ -345,9 +327,9 @@ intended. If not, now is the time for us to fix it up. The playbook below should
       notify: restart iis service
 
     - name: Open port for site on the firewall
-      win_firewall_rule:
+      community.windows.win_firewall_rule:
         name: "iisport{{ item.port }}"
-        enable: yes
+        enable: true
         state: present
         localport: "{{ item.port }}"
         action: Allow
@@ -356,13 +338,13 @@ intended. If not, now is the time for us to fix it up. The playbook below should
       with_items: "{{ iis_sites }}"
 
     - name: Template simple web site to iis_site_path as index.html
-      win_template:
+      ansible.windows.win_template:
         src: 'index.html.j2'
         dest: '{{ item.path }}\index.html'
       with_items: "{{ iis_sites }}"
 
     - name: Show website addresses
-      debug:
+      ansible.builtin.debug:
         msg: "{{ item }}"
       loop:
         - http://{{ ansible_host }}:8080
@@ -370,7 +352,7 @@ intended. If not, now is the time for us to fix it up. The playbook below should
 
   handlers:
     - name: restart iis service
-      win_service:
+      ansible.windows.win_service:
         name: W3Svc
         state: restarted
         start_mode: auto
@@ -388,7 +370,6 @@ Before we can create our Job Template, you must first go resync your
 Project again. So do that now.
 
 > **Note**
->
 > You must do this anytime you create a new *base* playbook file that
 > you will be selecting via a Job Template. The new file must be synced
 > to Controller before it will become available in the Job Template playbook
@@ -412,7 +393,7 @@ Complete the form using the following values
 | Execution Environment     | windows workshop execution environment   |      |
 | Project     | Ansible Workshop Project   |      |
 | Playbook    | `iis_advanced/site.yml`    |      |
-| Credentials  | Windows Credential            |      |
+| Credentials  | Workshop Credential            |      |
 | OPTIONS     | [\*] Enable Fact Storage         |      |
 
 Step 3
@@ -453,7 +434,6 @@ Step 1
 Select TEMPLATES
 
 > **Note**
->
 > Alternatively, if you haven’t navigated away from the job templates
 > creation page, you can scroll down to see all existing job templates
 

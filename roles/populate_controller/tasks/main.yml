@@ -1,4 +1,10 @@
 ---
+- name: load automation controller vars for specific workshop type
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{role_path}}/vars/{{ workshop_type }}.yml"
+    - "{{role_path}}/vars/unsupported_workshop.yml"
+
 - name: ensure controller is online and working
   uri:
     url: https://localhost/api/v2/ping/
@@ -12,6 +18,16 @@
   delay: 3
   retries: 5
 
+# Disable collections requirements.yml and rely on only EEs
+- name: Turn off AWX_COLLECTIONS_ENABLED on controller
+  awx.awx.settings:
+    name: AWX_COLLECTIONS_ENABLED
+    value: false
+    controller_username: admin
+    controller_password: "{{ admin_password }}"
+    controller_host: "https://{{ ansible_host }}"
+    validate_certs: false
+    
 #### CREDENTIAL
 - name: add SSH credential into Automation controller
   awx.awx.credential:
@@ -36,7 +52,7 @@
     controller_host: "https://{{ ansible_host }}"
     validate_certs: false
     inputs:
-      host: "{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+      host: "{{ student }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
       username: admin
       password: "{{ admin_password }}"
 #### END OF CREDENTIAL
@@ -55,23 +71,26 @@
   delay: 3
   retries: 5
 
-- name: copy inventory to awx user
-  copy:
-    src: "/home/{{ username }}/lab_inventory/hosts"
-    remote_src: true
-    dest: /var/lib/awx/hosts
-    owner: awx
-    group: awx
+# - name: copy inventory to awx user
+#   copy:
+#     src: "/home/{{ username }}/lab_inventory/hosts"
+#     remote_src: true
+#     dest: "/home/{{ run_commands_user }}"
+#     owner: "{{ run_commands_user }}"
+#     group: "{{ run_commands_user }}"
 
-- name: import inventory
-  become_user: awx
-  shell: 'tower-manage inventory_import --source=/var/lib/awx/hosts --inventory-name="Workshop Inventory"'
-#### end of inventory
+# - name: import inventory
+#   become_user: "{{ run_commands_user }}"
+#   shell: 'awx-manage inventory_import --source=/home/{{ run_commands_user }}/hosts --inventory-name="Workshop Inventory"'
+#   register: import_inventory
+#   until: import_inventory is not failed
+#   retries: 5
+# #### end of inventory
 
 ### USER
 - name: add student user
   awx.awx.user:
-    username: "{{ username }}"
+    username: "{{ student }}"
     password: "{{ admin_password }}"
     email: fake@fake.com
     state: present
@@ -81,65 +100,19 @@
     controller_host: "https://{{ ansible_host }}"
     validate_certs: false
 
-#### REMOVE BUILT-IN DEMO CONTENT
-- name: delete demo job template
-  awx.awx.job_template:
-    name: "Demo Job Template"
-    state: absent
-    controller_username: admin
-    controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ ansible_host }}"
-    validate_certs: false
-
-- name: remove demo credential
-  awx.awx.credential:
-    name: "Demo Credential"
-    credential_type: Machine
-    state: absent
-    organization: ""
-    inputs:
-      username: admin
-    controller_username: admin
-    controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ ansible_host }}"
-    validate_certs: false
-
-- name: remove demo inventory
-  awx.awx.inventory:
-    name: "Demo Inventory"
-    organization: "Default"
-    state: absent
-    controller_username: admin
-    controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ ansible_host }}"
-    validate_certs: false
-
-- name: remove built-in demo project
-  awx.awx.project:
-    name: "Demo Project"
-    organization: "Default"
-    scm_type: git
-    scm_url: "https://github.com/ansible/ansible-tower-samples"
-    state: absent
-    controller_username: admin
-    controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ ansible_host }}"
-    validate_certs: false
-#### END OF REMOVE BUILT-IN DEMO CONTENT
-
 # Workshop specific execution environments
-- name: Add security workshop execution environment
+- name: Add specific workshop execution environment
   awx.awx.execution_environment:
     name: "{{ workshop_type }} workshop execution environment"
     image: "{{ lookup('vars', workshop_type + '_ee') }}"
     pull: missing
     controller_username: admin
     controller_password: "{{ admin_password }}"
-    controller_host: "https://{{ username }}.{{ ec2_name_prefix }}.{{ workshop_dns_zone }}"
+    controller_host: "https://{{ ansible_host }}"
     validate_certs: false
 
 - name: setup workshop specific controller information
   include_tasks: "{{item}}"
   with_first_found:
-    - "{{role_path}}/tasks/{{workshop_type}}.yml"
-    - "{{role_path}}/tasks/unsupported_workshop.yml"
+    - "{{ role_path }}/tasks/{{ workshop_type }}.yml"
+    - "{{ role_path }}/tasks/unsupported_workshop.yml"

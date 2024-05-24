@@ -1,99 +1,28 @@
-# Exercise 2.2 - Threat hunting
+{% include sec_workshop_credentials.md %}
+# 2.2 Threat hunting
 
-**Read this in other languages**: <br>
-[![uk](../../../images/uk.png) English](README.md),  [![japan](../../../images/japan.png) 日本語](README.ja.md), [![france](../../../images/fr.png) Français](README.fr.md).<br>
+<!-- **Read this in other languages**: <br>
+[![uk](../../../images/uk.png) English](README.md),  [![japan](../../../images/japan.png) 日本語](README.ja.md), [![france](../../../images/fr.png) Français](README.fr.md).<br> -->
 
-<div id="section_title">
-  <a data-toggle="collapse" href="#collapse2">
-    <h3>Workshop access</h3>
-  </a>
-</div>
-<div id="collapse2" class="panel-collapse collapse">
-  <table>
-    <thead>
-      <tr>
-        <th>Role</th>
-        <th>Inventory name</th>
-        <th>Hostname</th>
-        <th>Username</th>
-        <th>Password</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Ansible Control Host</td>
-        <td>ansible</td>
-        <td>ansible-1</td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>IBM QRadar</td>
-        <td>qradar</td>
-        <td>qradar</td>
-        <td>admin</td>
-        <td>Ansible1!</td>
-      </tr>
-      <tr>
-        <td>Attacker</td>
-        <td>attacker</td>
-        <td>attacker</td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>Snort</td>
-        <td>snort</td>
-        <td>snort</td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>Check Point Management Server</td>
-        <td>checkpoint</td>
-        <td>checkpoint_mgmt</td>
-        <td>admin</td>
-        <td>admin123</td>
-      </tr>
-      <tr>
-        <td>Check Point Gateway</td>
-        <td>-</td>
-        <td>checkpoint_gw</td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>Windows Workstation</td>
-        <td>windows-ws</td>
-        <td>windows_ws</td>
-        <td>administrator</td>
-        <td><em>Provided by Instructor</em></td>
-      </tr>
-    </tbody>
-  </table>
-  <blockquote>
-    <p><strong>Note</strong></p>
-    <p>
-    The workshop includes preconfigured SSH keys to log into Red Hat Enterprise Linux hosts and don't need a username and password to log in.</p>
-  </blockquote>
-</div>
+- TOC
+{:toc}
 
-## Step 2.1 - The Background
+## 2.2.1 The Background
 
 Threat detection and response capabilities require from a security operator typically to deploy many tools to secure an enterprise IT. Due to missing processes and a lot of manual work this is a serious challenge to proper IT security operations!
 
 In this exercise, we imagine that we are a security operator in charge of an enterprise firewall in a larger organization. The firewall product used here is Check Point Next Generation Firewall. We will put special focus on interaction between various teams in this exercise - and how those interaction can be streamlined with [automation controller](https://docs.ansible.com/automation.html).
 
-## Step 2.2 - Preparations
+## 2.2.2 Preparations
 
 As in the previous exercise, we need to make sure a few steps in the previous [Check Point exercises](../1.2-checkpoint/README.md) have been completed:
 
-1. The `whitelist_attacker.yml` playbook must have been run at least once. 
+1. The `whitelist_attacker.yml` playbook must have been run at least once.
 2. Also, the logging for the attacker whitelist policy must have been activated in the Check Point SmartConsole.
 
 Both were done in the [Check Point exercises](../1.2-checkpoint/README.md). If you missed the steps, go back there, execute the playbook, follow the steps to activate the logging and come back here.
 
-## Step 2.3 - Explore the controller setup
+## 2.2.3 Explore the controller setup
 
 There are two more steps needed for preparation - but in contrast to the previous exercise, we will use automation controller to do them. Your automation controller installation is already populated with users, inventory, credentials and so on, and can be used directly. Let's have a look at it.
 
@@ -104,6 +33,8 @@ Automation controller is accessed via browser. You need the URL to your personal
 > **Note**
 >
 > This URL and login information are just an example. Your controller URL and login information will be different.
+
+{% include mesh.md %}
 
 Open your browser and enter the link to your automation controller instance. Log-in with your student ID and the password provided to you. You are greeted with a dashboard and a navigation bar on the left side.
 
@@ -119,7 +50,7 @@ Now all we need is the attack. Unlike the last exercise we will not write and ex
 
 The stage is set now. Read on to learn what this use case is about.
 
-## Step 2.4 - See the attack
+## 2.2.4 See the attack
 
 You are a security operator in charge of an enterprise firewall in a larger organization. You just found that a policy enforced by a Check Point Next Generation Firewall (NGFW), protecting your line of business applications, has been repeatedly violated. To showcase this, open the SmartConsole on your Windows workstation, access the Check Point management server and on the left side click on the **LOGS & MONITOR** tab. A new window opens, offering you two choices: **Audit Logs** and **Logs**. Click on **Logs** to get to the actual view of the logs:
 
@@ -127,7 +58,7 @@ You are a security operator in charge of an enterprise firewall in a larger orga
 >
 > Username: `admin`   
 > Password: `admin123`   
-> 
+>
 
 ![Check Point logs view, violation logs](images/smartconsole_violation_logs.png#centreme)
 
@@ -141,7 +72,7 @@ You can see, a series of messages with the description **http Traffic Dropped** 
 
 Seeing these violations we should start an investigation to assess if they are the outcome of an attack. The best way to investigate is to correlate the firewall logs with logs generated by other security solutions deployed in our network - like Snort - in a log management tool like QRadar.
 
-## Step 2.5 - Forward logs to QRadar
+## 2.2.5 Forward logs to QRadar
 
 However, as mentioned in many enterprise environments security solutions are not integrated with each other and, in large organizations, different teams are in charge of different aspects of IT security, with no processes in common. In our scenario, the typical way for a security operator to escalate the issue and start our investigation would be to contact the security analysis team, manually sending them the firewall logs we used to identify the rule violation - and then wait for the reply. A slow, manual process.
 
@@ -165,7 +96,7 @@ If you click on **Jobs** on the right side you will also see that you can always
 >
 > A job is an instance of automation controller launching a Job Template. The **Jobs** link displays a list of jobs and their statuses shown as completed successfully or failed, or as an active (running) job.
 
-## Step 2.6 - Verify new configuration
+## 2.2.6 Verify new configuration
 
 Let's quickly verify that the QRadar logs are now showing up. Log into the QRadar web UI. Click on **Log Activity** and verify that events are making it to QRadar from Check Point:
 
@@ -173,7 +104,11 @@ Let's quickly verify that the QRadar logs are now showing up. Log into the QRada
 >
 > Username: `admin`   
 > Password: `Ansible1!`   
-> 
+>
+
+> **Note**
+>
+> It is recommended to use Mozilla Firefox with the QRadar web UI.  For more information on this limitation please reference [workshop issue 1536](https://github.com/ansible/workshops/issues/1536)
 
 ![QRadar Log Activity showing logs from Check Point](images/qradar_checkpoint_logs.png#centreme)
 
@@ -187,7 +122,7 @@ Let's verify that QRadar also properly shows the log source. In the QRadar UI, c
 
 ![QRadar Log Sources](images/qradar_log_sources.png#centreme)
 
-## Step 2.7 - Offenses
+## 2.2.7 Offenses
 
 Next we want to manage offenses shown in QRadar. Currently non are generated - but are some already pre-configured for this use case? In the QRadar web UI, open the **Offenses** tab. On the left side menu, click on **Rules**. Above, Within the **Group:** drop down click select **Ansible**. All pre-configured offense rules for this workshop are shown:
 
@@ -201,7 +136,7 @@ From the wizard you can see that we only use very few checks (second box in the 
 
 To decide if this violation is a false positive, we need to make sure that other sources are not performing an attack which we might not see in the firewall. To do that we need to access the logs generated by the IDS and decide to check for a specific attack pattern that could be compatible with the violation on the firewall.
 
-## Step 2.8 - Add Snort rule
+## 2.2.8 Add Snort rule
 
 Let's add a new IDS rule. Again we will do this via a pre-approved playbook already in controller. Log out of controller, and log in as user `opsids` - the IDPS operator in charge of the IDPS. Navigate to **Templates**. There is a pre-created job template called **Add IDPS Rule** available to add a rule to Snort. Execute it by clicking on the small rocket icon. But as you see, instead of bringing you to the jobs output, you will be faced with a survey:
 
@@ -222,7 +157,7 @@ The playbook runs through, takes care of installing the new rule, restarting the
 Quickly verify the new rule on the Snort instance. From a terminal of your VS Code online editor, log in to Snort via SSH with the user `ec2-user`:
 
 ```bash
-[student<X>@ansible-1 ~]$ ssh ec2-user@snort
+[student@ansible-1 ~]$ ssh ec2-user@snort
 Last login: Fri Sep 20 15:09:40 2019 from 54.85.79.232
 [ec2-user@snort ~]$ sudo grep ddos_simulation /etc/snort/rules/local.rules
 alert tcp any any -> any any  (msg:"Attempted DDoS Attack"; uricontent:"/ddos_simulation"; classtype:successful-dos; sid:99000010; priority:1; rev:1;)
@@ -249,7 +184,7 @@ Only the two **Accept...** job templates belong the analyst, and can be modified
 
 Execute now both job templates **Accept IDPS logs in QRadar** and **Send IDPS logs to QRadar** by pressing the little rocket icon next to the job templates.
 
-## Step 2.9 - Whitelist IP
+## 2.2.9 Whitelist IP
 
 Let's quickly have a look at our SIEM QRadar: access the log activity tab. Validate, that in QRadar **no** events from the IDS are generated. That way you know for sure that the anomaly you see is only caused by the single IP you have in the firewall. No other traffic is causing the anomaly, you can safely assume that the anomaly you see is a false positive.
 
@@ -266,7 +201,7 @@ Let's verify that QRadar properly shows the Snort log events. In the QRadar UI, 
 ![QRadar Snort logs](images/qradar_snort_logs.png#centreme)
 
 
-## Step 2.10 - Rollback
+## 2.2.10 Rollback
 
 The analysts have ended their threat hunting. To reduce resource consumption and the analysis workload it is preferable to now rollback the Check Point and Snort log configurations back to their pre-investigation state. To do so, there is pre-approved job template available to the analysts called **Roll back all changes**.
 
@@ -280,6 +215,6 @@ You are done with the exercise. Turn back to the list of exercises to continue w
 
 **Navigation**
 <br><br>
-[Previous Exercise](../2.1-enrich/README.md) | [Next Exercise](../2.3-incident/README.md) 
+[Previous Exercise](../2.1-enrich/README.md) | [Next Exercise](../2.3-incident/README.md)
 <br><br>
 [Click here to return to the Ansible for Red Hat Enterprise Linux Workshop](../README.md)

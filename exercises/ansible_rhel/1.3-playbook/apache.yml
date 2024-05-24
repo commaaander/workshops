@@ -1,21 +1,21 @@
 ---
 - name: Apache server installed
-  hosts: node1
+  hosts: web
   become: true
   tasks:
 
-  - name: latest Apache version installed
-    yum:
-      name: httpd
-      state: latest
+    - name: Install Apache
+      ansible.builtin.dnf:
+        name: httpd
 
-  - name: Apache enabled and running
-    service:
-      name: httpd
-      enabled: true
-      state: started
+    - name: Apache enabled and running
+      ansible.builtin.service:
+        name: httpd
+        enabled: true
+        state: started
 
-  - name: copy index.html
-    copy:
-      src: web.html
-      dest: /var/www/html/index.html
+    - name: Copy index.html
+      ansible.builtin.copy:
+        src: web.html
+        dest: /var/www/html/index.html
+        mode: '644'

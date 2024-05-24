@@ -1,20 +1,22 @@
 # Supplemental - Network Configuration with Jinja Templates
 
-**Read this in other languages**: ![uk](https://github.com/ansible/workshops/raw/devel/images/uk.png) [English](README.md),  ![japan](https://github.com/ansible/workshops/raw/devel/images/japan.png) [日本語](README.ja.md).
+**Read this in other languages**: ![uk](https://github.com/ansible/workshops/raw/devel/images/uk.png) [English](README.md),  ![japan](https://github.com/ansible/workshops/raw/devel/images/japan.png) [日本語](README.ja.md), [日本語](README.ja.md),![Español](https://github.com/ansible/workshops/raw/devel/images/es.png) [Español](README.es.md).
 
 ## Table of Contents
 
-* [Objective](#objective)
-* [Guide](#guide)
-   * [Step 1 - Creating group vars](#step-1---creating-group-vars)
-   * [Step 2 - Creating Jinja2 template](#step-2---creating-jinja2-template)
-   * [Step 3 - Exploring the Jinja2 template](#step-3---exploring-the-jinja2-template)
-   * [Step 4 - Create a playbook](#step-4---create-a-playbook)
-   * [Step 5 - Execute the Ansible Playbook](#step-5---execute-the-ansible-playbook)
-   * [Step 6 - Verify configuration](#step-6---verify-configuration)
-* [Takeaways](#takeaways)
-* [Solution](#solution)
-* [Complete](#complete)
+- [Supplemental - Network Configuration with Jinja Templates](#supplemental---network-configuration-with-jinja-templates)
+  - [Table of Contents](#table-of-contents)
+  - [Objective](#objective)
+  - [Guide](#guide)
+    - [Step 1 - Creating group vars](#step-1---creating-group-vars)
+    - [Step 2 - Creating Jinja2 template](#step-2---creating-jinja2-template)
+    - [Step 3 - Exploring the Jinja2 template](#step-3---exploring-the-jinja2-template)
+    - [Step 4 - Create a playbook](#step-4---create-a-playbook)
+    - [Step 5 - Execute the Ansible Playbook](#step-5---execute-the-ansible-playbook)
+    - [Step 6 - Verify configuration](#step-6---verify-configuration)
+  - [Takeaways](#takeaways)
+  - [Solution](#solution)
+  - [Complete](#complete)
 
 ## Objective
 
@@ -160,13 +162,13 @@ Finally:
 Use the `ansible-navigator` command  to execute the playbook:
 
 ```
-[student1@ansible network-workshop]$ ansible-playbook config.yml
+[student@ansible network-workshop]$ ansible-playbook config.yml
 ```
 
 The output will look similar to the following:.
 
 ```
-[student1@ansible-1 network-workshop]$ ansible-navigator run config.yml --mode stdout
+[student@ansible-1 network-workshop]$ ansible-navigator run config.yml --mode stdout
 
 PLAY [configure network devices] ***********************************************
 
@@ -184,7 +186,7 @@ rtr2                       : ok=1    changed=1    unreachable=0    failed=0    s
 Use the command `show ip int br` to verify the IP addresses have been confirmed on the network devices.
 
 ```sh
-[student1@ansible network-workshop]$ ssh rtr1
+[student@ansible network-workshop]$ ssh rtr1
 
 rtr1#show ip int br | include Loopback100
 Loopback100            192.168.100.1   YES manual up                    up

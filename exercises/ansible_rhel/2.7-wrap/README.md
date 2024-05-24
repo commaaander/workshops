@@ -5,16 +5,18 @@
 
 ## Table of Contents
 
-* [Objective](#objective)
-* [Guide](#guide)
-  * [Let’s set the stage](#lets-set-the-stage)
-  * [The Git Repository](#the-git-repository)
-  * [Prepare Inventory](#prepare-inventory)
-  * [Create the Template](#create-the-template)
-  * [Check the results](#check-the-results)
-  * [Add Survey](#add-survey)
-  * [Solution](#solution)
-* [The End](#the-end)
+- [Workshop Exercise - Wrap up](#workshop-exercise---wrap-up)
+  - [Table of Contents](#table-of-contents)
+  - [Objective](#objective)
+  - [Guide](#guide)
+    - [Let’s set the stage](#lets-set-the-stage)
+    - [The Git Repository](#the-git-repository)
+    - [Prepare Inventory](#prepare-inventory)
+    - [Create the Template](#create-the-template)
+    - [Check the Results](#check-the-results)
+    - [Add Survey](#add-survey)
+    - [Solution](#solution)
+  - [The End](#the-end)
 
 ## Objective
 
@@ -94,17 +96,17 @@ Within **Resources** -> **Inventories** and select 'Workshop Inventory'.
 
 Within the **Groups** tab, click the **Add** button and create a new inventory group labeled `Webserver` and click **Save**.
 
-Within the **Details** tab of the `Webserver` group, click on **Edit**. Within the **Variables** textbox define a variable labeled `stage` with the value `dev` and click **Save**. 
-
-Within the **Details** tab of the `Webserver` inventory, click the **Hosts** tab, click the **Add** button and **Add existing host**. Select `node1`, `node2`, `node3` as the hosts to be part of the `Webserver` inventory.
+Within the **Details** tab of the `Webserver` group, click on **Edit**. Within the **Variables** textbox define a variable labeled `stage` with the value `dev` and click **Save**.
 
 ```yaml
 ---
 stage: dev
 ```
 
+Within the **Details** tab of the `Webserver` group, click the **Hosts** tab, click the **Add** button and **Add existing host**. Select `node1`, `node2`, `node3` as the hosts to be part of the `Webserver` inventory.
+
 Within **Resources** -> **Inventories**, select the `Workshop` Inventory. Click on the `Hosts` tab and click on `node2`.  Click on `Edit` and add the `stage: prod` variable in the **Variables** window. This overrides the inventory variable due to order of operations of how the variables are accessed during playbook execution.
- 
+
 
 Within the **Variables** textbox define a variable labeled `stage` with the value of `prod` and click **Save**.
 
@@ -161,12 +163,12 @@ Within **Resources** -> **Templates**, select the **Add** button and **Add job t
     <tr>
       <td>Options</td>
       <td>Privilege Escalation</td>
-    </tr>    
+    </tr>
   </table>
 
 Click **Save**.
 
-Run the template by clicking the **Launch** button. 
+Run the template by clicking the **Launch** button.
 
 
 ### Check the Results
@@ -191,12 +193,12 @@ This time we use the power of Ansible to check the results: execute uri to get t
         return_content: yes
       register: content
 
-   - debug:
+    - debug:
        var: content.content
 ```
 
 ```bash
-[student<X>@ansible-1 ~]$ ansible-navigator run check_url.yml -m stdout
+[student@ansible-1 ~]$ ansible-navigator run check_url.yml -m stdout
 ```
 
 Snippet of output:
@@ -271,7 +273,7 @@ In the same fashion add a second **Survey Question**
 * Click **Preview** for the Survey
 
 * Add permissions to the team `Web Content` so the template **Create Web Content** can be executed by `wweb`.
-* Within the **Resources** -> **Templates**, click **Create Web Content** and add **Access** to the user `wweb` the ability to execute the template. 
+* Within the **Resources** -> **Templates**, click **Create Web Content** and add **Access** to the user `wweb` the ability to execute the template.
   * **Select a Resource Type** -> click **Users**, click **Next**.
   * **Select Items from List** -> select the checkbox `wweb`, click **Next**.
   * **Select Roles to Apply** -> select the checkbox **Execute** and click **Save**.
@@ -285,7 +287,7 @@ Check the results again from your automation controller host. We will use the de
 
 
 ```bash
-[student<X>@ansible-1 ~]$ ansible-navigator run check_url.yml -m stdout
+[student@ansible-1 ~]$ ansible-navigator run check_url.yml -m stdout
 ```
 
 <!-- {% endraw %} -->

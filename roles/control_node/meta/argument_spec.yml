@@ -22,7 +22,7 @@ argument_specs:
       rhel_90_ee:
         type: str
         description: rhel_90 workshop execution environment
-        default: "registry.redhat.io/ansible-automation-platform-20-early-access/ee-supported-rhel8:2.0.0"
+        default: "quay.io/acme_corp/rhel_90_ee:latest"
       windows_ee:
         type: str
         description: windows workshop execution environment
@@ -30,7 +30,15 @@ argument_specs:
       smart_mgmt_ee:
         type: str
         description: smart_mgmt workshop execution environment
-        default: "quay.io/s4v0/ee-automated-smart-mgmt-29:1.0.4"
+        default: "quay.io/s4v0/ee-automated-smart-mgmt-29:latest"
+      auto_satellite_ee:
+        type: str
+        description: auto_satellite workshop execution environment
+        default: "quay.io/s4v0/ee-automated-satellite-aap2:latest"
+      ripu_ee:
+        type: str
+        description: ripu workshop execution environment
+        default: "registry.redhat.io/ansible-automation-platform-23/ee-supported-rhel8:1.0.0-208"
       username:
         description: The workshop username.
         type: str
